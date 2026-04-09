@@ -1,0 +1,35 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sipelka_backend_prod
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sipelka_db
+      - SPRING_DATASOURCE_USERNAME=sipelka_user
+      - SPRING_DATASOURCE_PASSWORD=sipelka_secret
+      # For production, it's safer to not use 'update' to avoid accidental schema drops
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=validate 
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    # Pin a specific postgres version for production stability
+    image: 'postgres:16-alpine' 
+    container_name: sipelka_postgres_prod
+    environment:
+      - 'POSTGRES_DB=sipelka_db'
+      - 'POSTGRES_USER=sipelka_user'
+      - 'POSTGRES_PASSWORD=sipelka_secret'
+    # Best practice for production: don't expose DB port to outside world unless needed
+    # ports:
+    #   - '5432:5432'
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data_prod:

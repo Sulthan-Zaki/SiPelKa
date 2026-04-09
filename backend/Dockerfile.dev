@@ -1,0 +1,19 @@
+FROM eclipse-temurin:21-jdk
+
+WORKDIR /app
+
+# Copy maven wrapper and pom.xml
+COPY mvnw pom.xml ./
+COPY .mvn .mvn
+
+# Make mvnw executable (important if project was created on Windows)
+RUN chmod +x mvnw
+
+# Download dependencies (this step will be cached unless pom.xml changes)
+RUN ./mvnw dependency:go-offline
+
+# We don't copy the src code here because we will mount it in docker-compose.dev.yml
+# This allows for hot-reloading when you change the source code
+
+# Run the spring boot application and enable remote debugging on port 5005
+CMD ["./mvnw", "spring-boot:run", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'"]

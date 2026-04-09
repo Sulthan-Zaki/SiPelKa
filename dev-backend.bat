@@ -1,0 +1,3 @@
+@echo off
+echo Starting SiPelKa Backend in Development Mode...
+docker compose -f ./backend/docker-compose.dev.yml up --build

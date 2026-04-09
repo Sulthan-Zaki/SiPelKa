@@ -2,6 +2,8 @@ package com.sipelka.backend.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import java.util.UUID;
+import com.github.f4b6a3.uuid.UuidCreator;
 
 @Entity
 @Table(name = "users")
@@ -13,8 +15,16 @@ import lombok.*;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(updatable = false, nullable = false)
+    private UUID id;
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.id == null) {
+            this.id = UuidCreator.getTimeOrderedEpoch();
+        }
+    }
+
 
     @Column(nullable = false)
     private String name;

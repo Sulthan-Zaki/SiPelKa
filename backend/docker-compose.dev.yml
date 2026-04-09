@@ -19,16 +19,11 @@ services:
       - postgres
 
   postgres:
-    image: 'postgres:16-alpine'
+    image: 'postgres:18-alpine'
     container_name: sipelka_postgres_dev
     environment:
       - 'POSTGRES_DB=sipelka_db'
       - 'POSTGRES_USER=sipelka_user'
       - 'POSTGRES_PASSWORD=sipelka_secret'
     ports:
-      - '5432:5432'
-    volumes:
-      - postgres_data_dev:/var/lib/postgresql/data
-
-volumes:
-  postgres_data_dev:
+      - '5433:5432'

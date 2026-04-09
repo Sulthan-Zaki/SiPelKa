@@ -2,7 +2,7 @@ spring:
   application:
     name: SiPelKa
   datasource:
-    url: jdbc:postgresql://localhost:5432/sipelka_db
+    url: jdbc:postgresql://localhost:5433/sipelka_db
     username: sipelka_user
     password: sipelka_secret
     driver-class-name: org.postgresql.Driver

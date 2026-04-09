@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+/* ============================================
+   SIPELKA Design System — Stitch Color Tokens
+   Institutional Red / Corporate Navy Palette
+   ============================================ */
+:root {
+  /* Primary — Institutional Deep Red */
+  --primary:                    #6e0000;
+  --on-primary:                 #ffffff;
+  --primary-container:          #990000;
+  --on-primary-container:       #ffa092;
+  --primary-fixed:              #ffdad4;
+  --primary-fixed-dim:          #ffb4a8;
+  --on-primary-fixed:           #410000;
+  --on-primary-fixed-variant:   #930000;
+  --inverse-primary:            #ffb4a8;
+
+  /* Secondary — Warm Taupe */
+  --secondary:                  #9e4033;
+  --on-secondary:               #ffffff;
+  --secondary-container:        #fe8a79;
+  --on-secondary-container:     #752218;
+  --secondary-fixed:            #ffdad4;
+  --secondary-fixed-dim:        #ffb4a8;
+  --on-secondary-fixed:         #410000;
+  --on-secondary-fixed-variant: #7f2a1f;
+
+  /* Tertiary — Institutional Blue */
+  --tertiary:                   #001ba0;
+  --on-tertiary:                #ffffff;
+  --tertiary-container:         #0029dc;
+  --on-tertiary-container:      #abb4ff;
+  --tertiary-fixed:             #dfe0ff;
+  --tertiary-fixed-dim:         #bcc2ff;
+  --on-tertiary-fixed:          #000c61;
+  --on-tertiary-fixed-variant:  #0027d4;
+
+  /* Surface Hierarchy (light to dark) */
+  --surface:                    #f9f9fc;
+  --surface-bright:             #f9f9fc;
+  --surface-dim:                #dadadc;
+  --surface-container-lowest:   #ffffff;
+  --surface-container-low:      #f3f3f6;
+  --surface-container:          #eeeef0;
+  --surface-container-high:     #e8e8ea;
+  --surface-container-highest:  #e2e2e5;
+  --surface-variant:            #e2e2e5;
+  --surface-tint:               #b82014;
+  --background:                 #f9f9fc;
+
+  /* On Surface */
+  --on-surface:                 #1a1c1e;
+  --on-surface-variant:         #5b403c;
+  --on-background:              #1a1c1e;
+  --inverse-surface:            #2f3133;
+  --inverse-on-surface:         #f0f0f3;
+
+  /* Outline */
+  --outline:                    #8f706b;
+  --outline-variant:            #e4beb8;
+
+  /* Error */
+  --error:                      #ba1a1a;
+  --on-error:                   #ffffff;
+  --error-container:            #ffdad6;
+  --on-error-container:         #93000a;
+}
+
+/* ============================================
+   Tailwind v4 @theme — register all tokens
+   ============================================ */
+@theme inline {
+  /* Primary */
+  --color-primary:                    var(--primary);
+  --color-on-primary:                 var(--on-primary);
+  --color-primary-container:          var(--primary-container);
+  --color-on-primary-container:       var(--on-primary-container);
+  --color-primary-fixed:              var(--primary-fixed);
+  --color-primary-fixed-dim:          var(--primary-fixed-dim);
+  --color-on-primary-fixed:           var(--on-primary-fixed);
+  --color-on-primary-fixed-variant:   var(--on-primary-fixed-variant);
+  --color-inverse-primary:            var(--inverse-primary);
+
+  /* Secondary */
+  --color-secondary:                  var(--secondary);
+  --color-on-secondary:               var(--on-secondary);
+  --color-secondary-container:        var(--secondary-container);
+  --color-on-secondary-container:     var(--on-secondary-container);
+  --color-secondary-fixed:            var(--secondary-fixed);
+  --color-secondary-fixed-dim:        var(--secondary-fixed-dim);
+  --color-on-secondary-fixed:         var(--on-secondary-fixed);
+  --color-on-secondary-fixed-variant: var(--on-secondary-fixed-variant);
+
+  /* Tertiary */
+  --color-tertiary:                   var(--tertiary);
+  --color-on-tertiary:                var(--on-tertiary);
+  --color-tertiary-container:         var(--tertiary-container);
+  --color-on-tertiary-container:      var(--on-tertiary-container);
+  --color-tertiary-fixed:             var(--tertiary-fixed);
+  --color-tertiary-fixed-dim:         var(--tertiary-fixed-dim);
+  --color-on-tertiary-fixed:          var(--on-tertiary-fixed);
+  --color-on-tertiary-fixed-variant:  var(--on-tertiary-fixed-variant);
+
+  /* Surface */
+  --color-surface:                    var(--surface);
+  --color-surface-bright:             var(--surface-bright);
+  --color-surface-dim:                var(--surface-dim);
+  --color-surface-container-lowest:   var(--surface-container-lowest);
+  --color-surface-container-low:      var(--surface-container-low);
+  --color-surface-container:          var(--surface-container);
+  --color-surface-container-high:     var(--surface-container-high);
+  --color-surface-container-highest:  var(--surface-container-highest);
+  --color-surface-variant:            var(--surface-variant);
+  --color-surface-tint:               var(--surface-tint);
+  --color-background:                 var(--background);
+
+  /* On Surface */
+  --color-on-surface:                 var(--on-surface);
+  --color-on-surface-variant:         var(--on-surface-variant);
+  --color-on-background:              var(--on-background);
+  --color-inverse-surface:            var(--inverse-surface);
+  --color-inverse-on-surface:         var(--inverse-on-surface);
+
+  /* Outline */
+  --color-outline:                    var(--outline);
+  --color-outline-variant:            var(--outline-variant);
+
+  /* Error */
+  --color-error:                      var(--error);
+  --color-on-error:                   var(--on-error);
+  --color-error-container:            var(--error-container);
+  --color-on-error-container:         var(--on-error-container);
+
+  /* Fonts */
+  --font-manrope:    var(--font-manrope), 'Manrope', sans-serif;
+  --font-public-sans: var(--font-public-sans), 'Public Sans', sans-serif;
+  --font-inter:      var(--font-inter), 'Inter', sans-serif;
+}
+
+/* ============================================
+   Global base styles
+   ============================================ */
+body {
+  background-color: var(--surface);
+  color: var(--on-surface);
+}
+
+/* Material Symbols Icon renderer */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  line-height: 1;
+  user-select: none;
+}
+
+/* ============================================
+   Utility classes
+   ============================================ */
+@layer utilities {
+  /* Typography helpers */
+  .font-headline {
+    font-family: var(--font-manrope), 'Manrope', sans-serif;
+  }
+  .font-body {
+    font-family: var(--font-public-sans), 'Public Sans', sans-serif;
+  }
+  .font-label {
+    font-family: var(--font-inter), 'Inter', sans-serif;
+  }
+
+  /* Elevation via ambient navy shadow (no pure black) */
+  .ambient-shadow {
+    box-shadow: 0px 20px 40px rgba(110, 0, 0, 0.04);
+  }
+  .ambient-shadow-md {
+    box-shadow: 0px 8px 24px rgba(110, 0, 0, 0.06);
+  }
+
+  /* Frosted glass — for nav/overlays */
+  .glass-effect {
+    background-color: rgba(249, 249, 252, 0.85);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+  }
+
+  /* Ghost border — accessibility fallback (barely visible) */
+  .ghost-border {
+    border: 1px solid rgba(228, 190, 184, 0.15);
+  }
+
+  /* Connectivity grid background texture */
+  .connectivity-grid {
+    background-color: #f9f9fc;
+    background-image:
+      radial-gradient(#e4beb8 0.5px, transparent 0.5px),
+      radial-gradient(#e4beb8 0.5px, #f9f9fc 0.5px);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+  }
+
+  /* Signature editorial gradient */
+  .editorial-gradient {
+    background:
+      radial-gradient(circle at 10% 20%, rgba(153, 0, 0, 0.03) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(0, 27, 160, 0.02) 0%, transparent 40%),
+      var(--surface);
+  }
+
+  /* Signature gradient button/hero fill */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
+  }
+}

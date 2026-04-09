@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+
+<html class="" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIPELKA | Create Account</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#6e0000", "on-primary": "#ffffff", "primary-container": "#990000", surface: "#f9f9fc", "on-surface": "#1a1c1e", "surface-container-lowest": "#ffffff", "surface-container": "#eeeef0", "surface-container-low": "#f3f3f6", "on-secondary-container": "#752218", outline: "#8f706b", "outline-variant": "#e4beb8", "secondary-container": "#fe8a79", "primary-fixed": "#ffdad4", "on-primary-fixed": "#410000", "tertiary-container": "#0029dc", "on-error": "#ffffff", "surface-tint": "#b82014", "surface-variant": "#e2e2e5", "on-primary-container": "#ffa092", "surface-dim": "#dadadc", "inverse-surface": "#2f3133", "surface-container-highest": "#e2e2e5", "on-error-container": "#93000a", "error-container": "#ffdad6", "on-secondary-fixed-variant": "#7f2a1f", background: "#f9f9fc", "secondary-fixed": "#ffdad4", "on-secondary-fixed": "#410000", secondary: "#9e4033", "on-tertiary-container": "#abb4ff", "on-primary-fixed-variant": "#930000", error: "#ba1a1a", "on-surface-variant": "#5b403c", tertiary: "#001ba0", "inverse-primary": "#ffb4a8", "on-tertiary-fixed": "#000c61", "primary-fixed-dim": "#ffb4a8", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "surface-container-high": "#e8e8ea", "tertiary-fixed": "#dfe0ff", "surface-bright": "#f9f9fc", "on-background": "#1a1c1e", "secondary-fixed-dim": "#ffb4a8", "on-tertiary-fixed-variant": "#0027d4", "tertiary-fixed-dim": "#bcc2ff", "inverse-on-surface": "#f0f0f3"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, fontFamily: {headline: ["Manrope"], body: ["Public Sans"], label: ["Public Sans"], display: "Manrope"}}}};</script>
+<style>
+        .connectivity-grid {
+            background-color: #f7f9fb;
+            background-image: radial-gradient(#c3c6d1 0.5px, transparent 0.5px), radial-gradient(#c3c6d1 0.5px, #f7f9fb 0.5px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            opacity: 0.15;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface min-h-screen flex flex-col selection:bg-primary-fixed selection:text-on-primary-fixed overflow-x-hidden">
+<div class="connectivity-grid"></div>
+<main class="flex-grow flex items-center justify-center relative z-10 px-6 py-16">
+<div class="w-full max-w-[480px]">
+<div class="text-center mb-10">
+<h1 class="font-headline font-extrabold text-4xl text-primary tracking-tighter mb-2" style="">SIPELKA</h1>
+<p class="font-body text-on-secondary-container tracking-tight opacity-70" style="">Research and Eligibility Information System</p>
+</div>
+<div class="bg-surface-container-lowest p-10 rounded-xl shadow-[0_20px_40px_rgba(0,27,60,0.06)] border border-outline-variant/20">
+<div class="mb-8">
+<h2 class="font-headline font-bold text-2xl text-primary mb-1" style="">Create Account</h2>
+<p class="text-on-secondary-container text-sm" style="">Join the institutional vanguard of research.</p>
+</div>
+<form class="space-y-6">
+<div class="relative group">
+<label class="font-label text-xs uppercase tracking-widest text-outline mb-1 block" for="full_name" style="">Full Name</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant" id="full_name" name="full_name" placeholder="Dr. Julian Vance" type="text"/>
+</div>
+<div class="relative group">
+<label class="font-label text-xs uppercase tracking-widest text-outline mb-1 block" for="institutional_email" style="">INSTITUTIONAL ID</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant" id="institutional_email" name="institutional_email" placeholder="Enter your ID" type="email"/>
+</div>
+<div class="relative group">
+<label class="font-label text-xs uppercase tracking-widest text-outline mb-1 block" for="department" style="">Department/Faculty</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant" id="department" name="department" placeholder="Quantum Research Division" type="text"/>
+</div>
+<div class="relative group">
+<label class="font-label text-xs uppercase tracking-widest text-outline mb-1 block" for="password" style="">Password</label>
+<input class="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant" id="password" name="password" placeholder="••••••••••••" type="password"/>
+</div>
+<div class="pt-4">
+<button class="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all duration-200 active:scale-[0.98]" style="" type="submit">
+                            Sign Up
+                        </button>
+</div>
+</form>
+<div class="mt-8 text-center">
+<p class="text-sm text-on-secondary-container" style="">
+                        Already have an account? 
+                        <a class="text-primary font-semibold hover:underline decoration-2 underline-offset-4 ml-1 transition-all" href="#" style="">Sign In</a>
+</p>
+</div>
+</div>
+<div class="mt-8 flex justify-center gap-4">
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px] font-label font-medium uppercase tracking-widest" style="">
+<span class="material-symbols-outlined text-[14px]" style="">verified_user</span>
+                    Institutional Security
+                </div>
+<div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-container text-on-secondary-container text-[10px] font-label font-medium uppercase tracking-widest" style="">
+<span class="material-symbols-outlined text-[14px]" style="">database</span>
+                    GDPR Compliant
+                </div>
+</div>
+</div>
+</main>
+<footer class="w-full py-12 px-8 bg-surface-container-low border-0 z-10">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center max-w-screen-2xl mx-auto">
+<div class="flex flex-col gap-2">
+<span class="font-headline font-black text-primary text-lg" style="">SIPELKA</span>
+<p class="font-body text-sm text-outline max-w-sm" style="">© 2024 Research and Eligibility Information System. Institutional Vanguard Division.</p>
+</div>
+<div class="flex flex-wrap gap-x-8 gap-y-4 md:justify-end">
+<a class="font-body text-sm text-outline hover:text-primary transition-all hover:underline" href="#" style="">Terms of Service</a>
+<a class="font-body text-sm text-outline hover:text-primary transition-all hover:underline" href="#" style="">Privacy Policy</a>
+<a class="font-body text-sm text-outline hover:text-primary transition-all hover:underline" href="#" style="">Institutional Access</a>
+<a class="font-body text-sm text-outline hover:text-primary transition-all hover:underline" href="#" style="">Support</a>
+</div>
+</div>
+</footer>
+</body></html>

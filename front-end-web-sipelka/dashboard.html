@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIPELKA | Main Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700&amp;family=Public+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<!-- Icons -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {primary: "#6e0000", "on-surface-variant": "#5b403c", "secondary-fixed-dim": "#ffb4a8", "secondary-fixed": "#ffdad4", "on-primary-fixed": "#410000", "on-primary": "#ffffff", "on-error-container": "#93000a", tertiary: "#001ba0", "primary-fixed": "#ffdad4", "surface-container-lowest": "#ffffff", "outline-variant": "#e4beb8", "secondary-container": "#fe8a79", "surface-dim": "#dadadc", "on-background": "#1a1c1e", "surface-bright": "#f9f9fc", "primary-fixed-dim": "#ffb4a8", outline: "#8f706b", error: "#ba1a1a", "inverse-on-surface": "#f0f0f3", "tertiary-fixed": "#dfe0ff", "error-container": "#ffdad6", "primary-container": "#990000", "on-surface": "#1a1c1e", "on-secondary-fixed": "#410000", "inverse-primary": "#ffb4a8", surface: "#f9f9fc", "on-primary-fixed-variant": "#930000", "on-tertiary-fixed": "#000c61", "on-tertiary-fixed-variant": "#0027d4", background: "#f9f9fc", "surface-tint": "#b82014", "tertiary-fixed-dim": "#bcc2ff", "on-secondary-container": "#752218", "surface-container-low": "#f3f3f6", "on-error": "#ffffff", "inverse-surface": "#2f3133", "tertiary-container": "#0029dc", "on-primary-container": "#ffa092", "surface-container": "#eeeef0", "on-tertiary": "#ffffff", "on-secondary": "#ffffff", "surface-container-highest": "#e2e2e5", "on-secondary-fixed-variant": "#7f2a1f", secondary: "#9e4033", "on-tertiary-container": "#abb4ff", "surface-container-high": "#e8e8ea", "surface-variant": "#e2e2e5"}, borderRadius: {DEFAULT: "0.125rem", lg: "0.25rem", xl: "0.5rem", full: "0.75rem"}, fontFamily: {headline: ["Manrope"], body: ["Public Sans"], label: ["Public Sans"], display: "Manrope"}}}};</script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f7f9fb;
+            background-image: radial-gradient(circle at 2px 2px, rgba(195, 198, 209, 0.05) 1px, transparent 0);
+            background-size: 32px 32px;
+        }
+        .editorial-shadow {
+            box-shadow: 0px 20px 40px rgba(0, 27, 60, 0.04);
+        }
+    </style>
+</head>
+<body class="font-body text-on-surface flex min-h-screen">
+<!-- SIDEBAR -->
+<!-- Managed via Shared Components Logic: SideNavBar -->
+<aside class="fixed left-0 top-0 h-screen w-64 z-50 bg-white dark:bg-slate-900 border-r border-slate-200/15 dark:border-slate-800/15 flex flex-col h-full py-6 px-4 font-['Manrope'] text-sm font-semibold tracking-tight">
+<div class="flex items-center gap-3 px-4 mb-10">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+<span class="material-symbols-outlined text-white" style="font-variation-settings: 'FILL' 1;">account_balance</span>
+</div>
+<div>
+<h1 class="text-xl font-extrabold text-[#001e41] dark:text-blue-400">SIPELKA</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Institutional Portal</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active State Logic applied to Dashboard -->
+<a class="flex items-center gap-3 px-4 py-3 text-[#001e41] dark:text-blue-300 bg-[#f2f4f6] dark:bg-slate-800 rounded-lg scale-95 active:scale-100 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Grant Programs</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="database">database</span>
+<span>Researcher Data</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Disbursement Status</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+<span>Eligibility Evaluation</span>
+</a>
+</nav>
+<div class="mt-auto space-y-1">
+<button class="w-full mb-6 bg-primary text-white py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>New Analysis</span>
+</button>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-[#f2f4f6] dark:hover:bg-slate-800 rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- MAIN CANVAS -->
+<main class="ml-64 flex-1 flex flex-col min-h-screen">
+<!-- HEADER -->
+<!-- Managed via Shared Components Logic: TopNavBar -->
+<header class="w-full h-16 sticky top-0 z-40 bg-white/85 dark:bg-slate-900/85 backdrop-blur-xl flex items-center justify-between px-8 w-full font-['Public_Sans'] text-sm tracking-tight tonal-transition">
+<div class="flex items-center flex-1 max-w-2xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full focus:ring-1 focus:ring-primary/20 text-on-surface-variant" placeholder="Search proposals, researchers, or grant identifiers..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6 ml-8">
+<div class="flex items-center gap-4 text-slate-500 dark:text-slate-400">
+<button class="relative hover:text-[#001e41] transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<button class="hover:text-[#001e41] transition-colors duration-200">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+</div>
+<div class="flex items-center gap-3 border-l pl-6 border-slate-200/50">
+<div class="text-right">
+<p class="font-semibold text-primary">Dr. Sarah Wijaya</p>
+<p class="text-[10px] text-slate-500 font-medium">Head Administrator</p>
+</div>
+<img alt="User profile avatar" class="w-10 h-10 rounded-full object-cover ring-2 ring-primary/5" data-alt="Professional headshot of a female doctor with glasses and lab coat, smiling warmly in a clinical setting with soft natural light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5jmEX6YDyEn5PLA8VWPK6sjdL0u0oDRiAPBw52Tg82oji3_6_8SWpH8A5g50bgK04nFmaVaU99dHgz1JEll4n-D-Ax58Rp3cUQNM3eiJDz3Xm3q2dKx-zRnZV1MzuuAPGjCKwfQOvsNx95UQfeABx9XBWZa6jXQ9XbeZYNShfjRs_RF7fs-rL5aIApHx7n_NcwKGI6pvtKQx9__XVa1SrtDgi7swFjKzTt6arTG85J4vQT42KCXLuOX217fynr6PMtEVStmiFQ44"/>
+</div>
+</div>
+</header>
+<!-- DASHBOARD CONTENT -->
+<div class="p-8 space-y-8 max-w-[1600px] mx-auto w-full">
+<!-- HEADER SECTION -->
+<div class="flex flex-col gap-1">
+<h2 class="font-headline text-3xl font-bold text-primary">Institutional Overview</h2>
+<p class="text-on-surface-variant font-body">Welcome back, Dr. Wijaya. Here is the latest research activity update.</p>
+</div>
+<!-- TOP ROW: STAT CARDS -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-outline-variant/15 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 bg-secondary-container/30 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">description</span>
+</div>
+<span class="text-xs font-label font-semibold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">+12% vs last month</span>
+</div>
+<div>
+<p class="text-sm font-label text-on-surface-variant mb-1 uppercase tracking-wider font-bold">Active Proposals</p>
+<h3 class="text-3xl font-headline font-extrabold text-primary">142</h3>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-outline-variant/15 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 bg-primary-container/10 rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">payments</span>
+</div>
+<span class="text-xs font-label font-semibold text-primary bg-primary-fixed px-2 py-1 rounded-full">Budget Pacing</span>
+</div>
+<div>
+<p class="text-sm font-label text-on-surface-variant mb-1 uppercase tracking-wider font-bold">Total Budget Allocated</p>
+<div class="flex items-baseline gap-2">
+<h3 class="text-3xl font-headline font-extrabold text-primary">Rp 4.2B</h3>
+<span class="text-sm text-slate-400 font-medium">/ 6.0B</span>
+</div>
+<div class="mt-4 w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary" style="width: 70%;"></div>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl editorial-shadow border border-outline-variant/15 flex flex-col gap-4">
+<div class="flex items-center justify-between">
+<div class="w-12 h-12 bg-tertiary-fixed/30 rounded-xl flex items-center justify-center text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined">pending_actions</span>
+</div>
+<span class="text-xs font-label font-semibold text-amber-600 bg-amber-50 px-2 py-1 rounded-full">Requires Attention</span>
+</div>
+<div>
+<p class="text-sm font-label text-on-surface-variant mb-1 uppercase tracking-wider font-bold">Pending Reviews</p>
+<h3 class="text-3xl font-headline font-extrabold text-primary">28</h3>
+</div>
+</div>
+</div>
+<!-- MIDDLE ROW: CHARTS -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Line Chart Placeholder -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-8 rounded-xl editorial-shadow border border-outline-variant/15">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h4 class="font-headline text-xl font-bold text-primary">Monthly Research Trends</h4>
+<p class="text-xs text-on-surface-variant">Proposal volume by category over the last 6 months</p>
+</div>
+<select class="text-xs font-label border-none bg-surface-container-low rounded-lg focus:ring-0 cursor-pointer">
+<option>Last 6 Months</option>
+<option>Last Year</option>
+</select>
+</div>
+<!-- Visual Chart Simulation -->
+<div class="h-64 flex flex-col justify-between">
+<div class="flex items-end justify-between h-48 gap-4 px-2">
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[40%] group-hover:h-[45%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[20%]"></div>
+</div>
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[55%] group-hover:h-[60%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[25%]"></div>
+</div>
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[75%] group-hover:h-[80%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[35%]"></div>
+</div>
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[65%] group-hover:h-[70%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[30%]"></div>
+</div>
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[85%] group-hover:h-[90%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[40%]"></div>
+</div>
+<div class="w-full bg-surface-container-low relative group">
+<div class="absolute bottom-0 w-full bg-primary-fixed-dim rounded-t-lg transition-all h-[50%] group-hover:h-[55%]"></div>
+<div class="absolute bottom-0 w-full bg-primary/20 rounded-t-lg h-[22%]"></div>
+</div>
+</div>
+<div class="flex justify-between text-[10px] text-slate-400 font-label px-2 pt-4 border-t border-outline-variant/10">
+<span>JAN</span>
+<span>FEB</span>
+<span>MAR</span>
+<span>APR</span>
+<span>MAY</span>
+<span>JUN</span>
+</div>
+</div>
+</div>
+<!-- Doughnut Chart Placeholder -->
+<div class="bg-surface-container-lowest p-8 rounded-xl editorial-shadow border border-outline-variant/15 flex flex-col">
+<h4 class="font-headline text-xl font-bold text-primary mb-1">Budget Utilization</h4>
+<p class="text-xs text-on-surface-variant mb-8">Allocation by Department</p>
+<div class="flex-1 flex flex-col items-center justify-center gap-8">
+<div class="relative w-40 h-40">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#eceef0" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#001e41" stroke-dasharray="125.6" stroke-dashoffset="30" stroke-width="12"></circle>
+<circle cx="50" cy="50" fill="transparent" r="40" stroke="#adc7f7" stroke-dasharray="125.6" stroke-dashoffset="110" stroke-width="12"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-2xl font-headline font-bold text-primary">70%</span>
+<span class="text-[10px] text-slate-400 font-bold uppercase">Utilized</span>
+</div>
+</div>
+<div class="w-full space-y-3">
+<div class="flex items-center justify-between text-xs font-label">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-on-surface">Life Sciences</span>
+</div>
+<span class="font-bold">45%</span>
+</div>
+<div class="flex items-center justify-between text-xs font-label">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-fixed-dim"></span>
+<span class="text-on-surface">Engineering</span>
+</div>
+<span class="font-bold">25%</span>
+</div>
+<div class="flex items-center justify-between text-xs font-label">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-surface-container"></span>
+<span class="text-on-surface">Others</span>
+</div>
+<span class="font-bold">30%</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- BOTTOM ROW: RECENT SUBMISSIONS -->
+<div class="bg-surface-container-lowest rounded-xl editorial-shadow border border-outline-variant/15 overflow-hidden">
+<div class="p-8 border-b border-surface-container-low flex items-center justify-between">
+<div>
+<h4 class="font-headline text-xl font-bold text-primary">Recent Submissions</h4>
+<p class="text-xs text-on-surface-variant">Detailed view of latest research grant applications</p>
+</div>
+<button class="text-primary font-semibold text-sm hover:underline">View All Submissions</button>
+</div>
+<table class="w-full text-left font-label">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-widest font-bold">
+<th class="px-8 py-4">Investigator</th>
+<th class="px-8 py-4">Research Title</th>
+<th class="px-8 py-4 text-center">Submission Date</th>
+<th class="px-8 py-4 text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container-low">
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-[10px] font-bold text-on-secondary-container">AP</div>
+<div>
+<p class="font-bold text-sm text-primary">Dr. Agus Pratama</p>
+<p class="text-[10px] text-slate-400">Bio-Molecular Lab</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<p class="text-sm font-medium text-primary line-clamp-1">AI-Driven Genomics for Tropical Disease Resistance</p>
+<p class="text-[10px] text-slate-400">Program: International Research Grant 2024</p>
+</td>
+<td class="px-8 py-5 text-center text-xs text-on-surface-variant">Oct 24, 2023</td>
+<td class="px-8 py-5 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container">
+                                    Review
+                                </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-[10px] font-bold text-on-tertiary-fixed-variant">LS</div>
+<div>
+<p class="font-bold text-sm text-primary">Linda Setiawan, Ph.D.</p>
+<p class="text-[10px] text-slate-400">Civil Engineering Dept.</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<p class="text-sm font-medium text-primary line-clamp-1">Sustainable Concrete from Agricultural Waste</p>
+<p class="text-[10px] text-slate-400">Program: Infrastructure Innovation Fund</p>
+</td>
+<td class="px-8 py-5 text-center text-xs text-on-surface-variant">Oct 22, 2023</td>
+<td class="px-8 py-5 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-surface-container text-slate-500">
+                                    Pending
+                                </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low/30 transition-colors group">
+<td class="px-8 py-5">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center text-[10px] font-bold text-primary">BK</div>
+<div>
+<p class="font-bold text-sm text-primary">Budi Kusuma</p>
+<p class="text-[10px] text-slate-400">Social Sciences</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-5">
+<p class="text-sm font-medium text-primary line-clamp-1">Urban Migration Dynamics in Southeast Asia</p>
+<p class="text-[10px] text-slate-400">Program: Strategic Humanities Fund</p>
+</td>
+<td class="px-8 py-5 text-center text-xs text-on-surface-variant">Oct 21, 2023</td>
+<td class="px-8 py-5 text-right">
+<span class="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container">
+                                    Review
+                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</main>
+</body></html>

@@ -15,3 +15,10 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         '[format_sql]': true
+
+app:
+  jwt:
+    secret: "SiPelKaJwtSecretKeyYangSangatPanjangDanAman2026XYZ!!"
+    expiration-ms: 86400000 # 24 hours
+  admin-token: "SIPELKA_ADMIN_SECRET_2026"
+

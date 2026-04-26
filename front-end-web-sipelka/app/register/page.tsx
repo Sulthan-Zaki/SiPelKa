@@ -1,19 +1,29 @@
-"use client";
-import Link from "next/link";
-import { useState } from "react";
+import { authApi } from "@/lib/authApi";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showAdminToken, setShowAdminToken] = useState(false);
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [nip, setNip] = useState("");
+  const [adminToken, setAdminToken] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // ✅ VALIDATION FUNCTION
   const validate = () => {
+    if (!name || !email || !nip || !password || !adminToken) {
+      return "Semua field harus diisi";
+    }
+
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return "Email tidak valid (harus ada @ dan domain)";
@@ -25,14 +35,15 @@ export default function RegisterPage() {
     }
 
     if (password !== confirmPassword) {
-      return "Password tidak sama";
+      return "Konfirmasi password tidak sama";
     }
 
     return "";
   };
 
   // ✅ HANDLE SUBMIT
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     const validationError = validate();
 
     if (validationError) {
@@ -41,7 +52,27 @@ export default function RegisterPage() {
     }
 
     setError("");
-    alert("Berhasil daftar!");
+    setIsLoading(true);
+
+    try {
+      await authApi.registerAdmin({
+        name,
+        email,
+        nip,
+        password,
+        adminToken,
+      });
+      alert("Registrasi admin berhasil! Silakan login.");
+      router.push("/login");
+    } catch (err: any) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Registrasi gagal. Silakan periksa kembali data Anda.");
+      } else {
+        setError("Terjadi kesalahan sistem. Silakan coba lagi nanti.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <>
@@ -71,59 +102,93 @@ export default function RegisterPage() {
           <div className="bg-surface-container-lowest p-10 rounded-xl shadow-[0_20px_40px_rgba(0,27,60,0.06)] border border-outline-variant/20">
             <div className="mb-8">
               <h2 className="font-headline font-bold text-2xl text-primary mb-1">
-                Create Account
+                Admin Registration
               </h2>
               <p className="text-on-secondary-container text-sm">
-                Join the institutional vanguard of research.
+                Join the institutional vanguard of research administration.
               </p>
             </div>
 
-            <form className="space-y-6">
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="relative group">
                 <label
                   className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
-                  htmlFor="full_name"
+                  htmlFor="name"
                 >
                   Full Name
                 </label>
                 <input
                   className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
-                  id="full_name"
-                  name="full_name"
+                  id="name"
+                  name="name"
                   placeholder="Enter your Full Name"
                   type="text"
+                  required
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
                 />
               </div>
               <div className="relative group">
                 <label
                   className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
-                  htmlFor="institutional_email"
+                  htmlFor="email"
                 >
-                  INSTITUTIONAL Email
+                  Institutional Email
                 </label>
                 <input
                   className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
-                  id="institutional_email"
-                  name="institutional_email"
+                  id="email"
+                  name="email"
                   placeholder="Enter your Email"
                   type="email"
+                  required
+                  value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="relative group">
                 <label
                   className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
-                  htmlFor="department"
+                  htmlFor="nip"
                 >
-                  Department/Faculty
+                  NIP / Institutional ID
                 </label>
                 <input
                   className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
-                  id="department"
-                  name="department"
-                  placeholder="Quantum Research Division"
+                  id="nip"
+                  name="nip"
+                  placeholder="Enter your NIP"
                   type="text"
+                  required
+                  value={nip}
+                  onChange={(e) => setNip(e.target.value)}
                 />
+              </div>
+              <div className="relative group">
+                <label
+                  className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
+                  htmlFor="adminToken"
+                >
+                  Admin Secret Token
+                </label>
+                <div className="relative">
+                  <input
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 pr-10 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
+                    id="adminToken"
+                    name="adminToken"
+                    placeholder="Enter security token"
+                    type={showAdminToken ? "text" : "password"}
+                    required
+                    value={adminToken}
+                    onChange={(e) => setAdminToken(e.target.value)}
+                  />
+                  <span
+                    onClick={() => setShowAdminToken(!showAdminToken)}
+                    className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer text-outline hover:text-primary transition"
+                  >
+                    {showAdminToken ? "visibility_off" : "visibility"}
+                  </span>
+                </div>
               </div>
               <div className="relative group">
                 <label
@@ -140,6 +205,8 @@ export default function RegisterPage() {
                     name="password"
                     placeholder="••••••••••••"
                     type={showPassword ? "text" : "password"}
+                    required
+                    value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
 
@@ -166,6 +233,8 @@ export default function RegisterPage() {
                     name="confirm_password"
                     placeholder="••••••••••••"
                     type={showConfirmPassword ? "text" : "password"}
+                    required
+                    value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                   />
 
@@ -178,17 +247,22 @@ export default function RegisterPage() {
                 </div>
               </div>
               {/* ERROR MESSAGE */}
-              {error && <p className="text-red-500 text-sm">{error}</p>}
+              {error && (
+                <div className="p-3 rounded bg-red-50 text-red-500 text-sm border border-red-100">
+                  {error}
+                </div>
+              )}
               <div className="pt-4">
                 <button
-                  className="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all duration-200 active:scale-[0.98] cursor-pointer"
-                  type="button"
-                  onClick={handleSubmit}
+                  className="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all duration-200 active:scale-[0.98] cursor-pointer disabled:opacity-50"
+                  type="submit"
+                  disabled={isLoading}
                 >
-                  Sign Up
+                  {isLoading ? "Creating Account..." : "Sign Up"}
                 </button>
               </div>
             </form>
+
 
             <div className="mt-8 text-center">
               <p className="text-sm text-on-secondary-container">

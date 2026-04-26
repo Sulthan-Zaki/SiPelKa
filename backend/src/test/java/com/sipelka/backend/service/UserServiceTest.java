@@ -94,25 +94,24 @@ public class UserServiceTest {
     }
 
     @Test
-    void shouldAuthenticateUserSuccessfullyAfterActivation() {
-        UserDto.UserRegistrationRequest regReq = new UserDto.UserRegistrationRequest();
-        regReq.setName("Auth Test User");
+    void shouldAuthenticateAdminSuccessfully() {
+        UserDto.AdminRegistrationRequest regReq = new UserDto.AdminRegistrationRequest();
+        regReq.setName("Auth Test Admin");
         regReq.setEmail("auth@example.com");
         regReq.setNip("77777777");
         regReq.setPassword("TargetPassword!");
-        UserDto.Response regResponse = userService.registerUser(regReq);
-
-        // Activate user
-        userService.activateUser(regResponse.getId());
+        regReq.setAdminToken("SIPELKA_ADMIN_SECRET_2026");
+        userService.registerAdmin(regReq);
 
         UserDto.LoginRequest loginReq = new UserDto.LoginRequest();
         loginReq.setEmail("auth@example.com");
         loginReq.setPassword("TargetPassword!");
 
-        UserDto.Response response = userService.login(loginReq);
+        UserDto.LoginResponse response = userService.login(loginReq);
 
         assertThat(response).isNotNull();
-        assertThat(response.getName()).isEqualTo("Auth Test User");
+        assertThat(response.getToken()).isNotNull();
+        assertThat(response.getUser().getName()).isEqualTo("Auth Test Admin");
     }
 
     @Test
@@ -132,6 +131,7 @@ public class UserServiceTest {
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("Account is not activated yet. Please wait for administrator approval.");
     }
+
 
     @Test
     void shouldThrowExceptionWhenRegisteringAdminWithInvalidToken() {
@@ -225,14 +225,13 @@ public class UserServiceTest {
 
     @Test
     void shouldThrowExceptionWhenLoggingInWithWrongPassword() {
-        UserDto.UserRegistrationRequest regReq = new UserDto.UserRegistrationRequest();
-        regReq.setName("Normal User");
+        UserDto.AdminRegistrationRequest regReq = new UserDto.AdminRegistrationRequest();
+        regReq.setName("Admin User");
         regReq.setEmail("normal@example.com");
         regReq.setNip("12312312");
         regReq.setPassword("CorrectPassword123");
-        UserDto.Response regResponse = userService.registerUser(regReq);
-
-        userService.activateUser(regResponse.getId());
+        regReq.setAdminToken("SIPELKA_ADMIN_SECRET_2026");
+        userService.registerAdmin(regReq);
 
         UserDto.LoginRequest loginReq = new UserDto.LoginRequest();
         loginReq.setEmail("normal@example.com");
@@ -242,6 +241,7 @@ public class UserServiceTest {
                 .isInstanceOf(InvalidCredentialsException.class)
                 .hasMessage("Invalid credentials");
     }
+
 
     @Test
     void shouldGetAllUsersAndValidate() {

@@ -39,4 +39,11 @@ public class UserDto {
         private UserRole role;
         private boolean isActivated;
     }
+
+    @Data
+    public static class LoginResponse {
+        private String token;
+        private Response user;
+    }
 }
+

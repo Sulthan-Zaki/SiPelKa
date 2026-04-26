@@ -34,9 +34,10 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UserDto.Response> login(@RequestBody UserDto.LoginRequest req) {
+    public ResponseEntity<UserDto.LoginResponse> login(@RequestBody UserDto.LoginRequest req) {
         return ResponseEntity.ok(userService.login(req));
     }
+
 
     @GetMapping
     public ResponseEntity<List<UserDto.Response>> getAllUsers() {

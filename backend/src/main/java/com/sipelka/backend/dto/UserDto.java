@@ -1,16 +1,27 @@
 package com.sipelka.backend.dto;
 
+import com.sipelka.backend.model.enums.UserRole;
 import lombok.Data;
 import java.util.UUID;
 
 public class UserDto {
 
     @Data
-    public static class RegistrationRequest {
+    public static class AdminRegistrationRequest {
         private String name;
         private String email;
         private String nip;
         private String password;
+        private String adminToken;
+    }
+
+    @Data
+    public static class UserRegistrationRequest {
+        private String name;
+        private String email;
+        private String nip;
+        private String password;
+        private UserRole role;
     }
 
     @Data
@@ -25,5 +36,7 @@ public class UserDto {
         private String name;
         private String email;
         private String nip;
+        private UserRole role;
+        private boolean isActivated;
     }
 }

@@ -1,6 +1,48 @@
+"use client";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function RegisterPage() {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [error, setError] = useState("");
+
+  // ✅ VALIDATION FUNCTION
+  const validate = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return "Email tidak valid (harus ada @ dan domain)";
+    }
+
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      return "Password minimal 8 karakter, harus ada huruf besar, kecil, dan angka";
+    }
+
+    if (password !== confirmPassword) {
+      return "Password tidak sama";
+    }
+
+    return "";
+  };
+
+  // ✅ HANDLE SUBMIT
+  const handleSubmit = () => {
+    const validationError = validate();
+
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setError("");
+    alert("Berhasil daftar!");
+  };
   return (
     <>
       {/* connectivity-grid background */}
@@ -48,7 +90,7 @@ export default function RegisterPage() {
                   className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
                   id="full_name"
                   name="full_name"
-                  placeholder="Dr. Julian Vance"
+                  placeholder="Enter your Full Name"
                   type="text"
                 />
               </div>
@@ -57,14 +99,15 @@ export default function RegisterPage() {
                   className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
                   htmlFor="institutional_email"
                 >
-                  INSTITUTIONAL ID
+                  INSTITUTIONAL Email
                 </label>
                 <input
                   className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
                   id="institutional_email"
                   name="institutional_email"
-                  placeholder="Enter your ID"
+                  placeholder="Enter your Email"
                   type="email"
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="relative group">
@@ -89,18 +132,58 @@ export default function RegisterPage() {
                 >
                   Password
                 </label>
-                <input
-                  className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
-                  id="password"
-                  name="password"
-                  placeholder="••••••••••••"
-                  type="password"
-                />
+
+                <div className="relative">
+                  <input
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 pr-10 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
+                    id="password"
+                    name="password"
+                    placeholder="••••••••••••"
+                    type={showPassword ? "text" : "password"}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  <span
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer text-outline hover:text-primary transition"
+                  >
+                    {showPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </div>
               </div>
+              <div className="relative group">
+                <label
+                  className="font-label text-xs uppercase tracking-widest text-outline mb-1 block"
+                  htmlFor="confirm_password"
+                >
+                  Confirm Password
+                </label>
+
+                <div className="relative">
+                  <input
+                    className="w-full bg-transparent border-0 border-b border-outline-variant/30 py-2.5 pr-10 focus:ring-0 focus:border-primary transition-all font-body text-on-surface placeholder:text-outline-variant"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="••••••••••••"
+                    type={showConfirmPassword ? "text" : "password"}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="material-symbols-outlined absolute right-0 top-1/2 -translate-y-1/2 cursor-pointer text-outline hover:text-primary transition"
+                  >
+                    {showConfirmPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </div>
+              </div>
+              {/* ERROR MESSAGE */}
+              {error && <p className="text-red-500 text-sm">{error}</p>}
               <div className="pt-4">
                 <button
                   className="w-full bg-primary text-on-primary font-headline font-bold py-4 rounded-xl shadow-lg hover:bg-primary-container transition-all duration-200 active:scale-[0.98] cursor-pointer"
                   type="button"
+                  onClick={handleSubmit}
                 >
                   Sign Up
                 </button>

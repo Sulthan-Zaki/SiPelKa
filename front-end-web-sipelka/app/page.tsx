@@ -18,6 +18,12 @@ export default function LandingPage() {
             </a>
             <a
               className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body"
+              href="#platforms"
+            >
+              Platforms
+            </a>
+            <a
+              className="text-on-surface-variant font-medium hover:text-primary transition-colors font-body"
               href="#target-users"
             >
               Target Users
@@ -39,9 +45,10 @@ export default function LandingPage() {
               Digital Research Management
             </span>
             <h1 className="font-headline text-5xl md:text-6xl font-extrabold text-primary leading-tight tracking-tight mb-6">
-              The Digital{" "}
+              The Digital <br />
               <span className="text-secondary">Vanguard</span> of
-              <br />Institutional Research
+              <br />
+              Institutional Research
             </h1>
             <p className="text-on-surface-variant text-lg md:text-xl leading-relaxed mb-10 max-w-xl font-body">
               An integrated platform bridging researchers with DPPM.
@@ -123,26 +130,40 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Stats Strip */}
-        <section className="bg-primary py-16 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-5 connectivity-grid pointer-events-none"></div>
-          <div className="relative z-10 max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        {/* STATS */}
+        <section id="platforms" className="bg-[#8B0000] text-white py-24">
+          <div className="max-w-5xl mx-auto px-8 text-center">
+            {/* TITLE */}
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Bridging the Gap: Researchers & DPPM
+            </h2>
+
+            {/* DESCRIPTION */}
+            <p className="text-white/70 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+              Transparency and accountability in grant management. SIPELKA
+              creates a seamless flow of data between the academic community and
+              the Directorate of Research and Community Service (DPPM).
+            </p>
+          </div>
+
+          {/* STATS */}
+          <div className="max-w-6xl mx-auto px-8 mt-14 grid grid-cols-2 md:grid-cols-4 gap-6">
             {[
-              { val: "100%", label: "Digital Submission" },
-              { val: "Real-time", label: "Outcome Monitoring" },
-              { val: "Secure", label: "Document Integrity" },
-              { val: "Accountable", label: "Budget Oversight" },
-            ].map((s) => (
+              { title: "100%", subtitle: "DIGITAL SUBMISSION" },
+              { title: "Real-time", subtitle: "OUTCOME MONITORING" },
+              { title: "Secure", subtitle: "DOCUMENT INTEGRITY" },
+              { title: "Accountable", subtitle: "BUDGET OVERSIGHT" },
+            ].map((item) => (
               <div
-                key={s.label}
-                className="p-6 border border-on-primary/10 rounded-xl"
+                key={item.title}
+                className="border border-white/20 rounded-xl py-6 px-4 text-center hover:bg-white/5 transition"
               >
-                <div className="text-3xl font-bold font-headline text-on-primary mb-1">
-                  {s.val}
-                </div>
-                <div className="text-xs font-label text-on-primary/60 uppercase tracking-wider">
-                  {s.label}
-                </div>
+                <h3 className="text-xl md:text-2xl font-bold mb-1">
+                  {item.title}
+                </h3>
+                <p className="text-[11px] tracking-widest text-white/60 uppercase">
+                  {item.subtitle}
+                </p>
               </div>
             ))}
           </div>
@@ -220,12 +241,18 @@ export default function LandingPage() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   DPPM Home
                 </a>
               </li>
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   Research Guidelines
                 </a>
               </li>
@@ -237,12 +264,18 @@ export default function LandingPage() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   Help Center
                 </a>
               </li>
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   System Status
                 </a>
               </li>
@@ -254,12 +287,18 @@ export default function LandingPage() {
             </h4>
             <ul className="space-y-2">
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body" href="#">
+                <a
+                  className="text-on-surface-variant hover:text-primary transition-colors text-sm font-body"
+                  href="#"
+                >
                   Terms of Service
                 </a>
               </li>

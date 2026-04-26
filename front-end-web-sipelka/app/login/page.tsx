@@ -1,6 +1,47 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { authApi } from "@/lib/authApi";
+import axios from "axios";
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const data = await authApi.login({ email, password });
+      
+      // Save to localStorage for Axios interceptor
+      localStorage.setItem("sipelka_token", data.token);
+      localStorage.setItem("sipelka_user", JSON.stringify(data.user));
+      
+      // Save to cookie for Next.js middleware (Edge Runtime)
+      document.cookie = `sipelka_token=${data.token}; path=/; max-age=86400`;
+      
+      router.refresh();
+      router.push("/dashboard");
+    } catch (err: any) {
+
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || "Login gagal. Periksa kembali kredensial Anda.");
+      } else {
+        setError("Terjadi kesalahan sistem. Silakan coba lagi nanti.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen flex flex-col editorial-gradient relative overflow-hidden">
       {/* Decorative background element */}
@@ -90,30 +131,34 @@ export default function LoginPage() {
                 <h3 className="text-2xl font-bold tracking-tight text-on-surface font-headline mb-2">
                   Institutional Login
                 </h3>
+                <h4 className="text-xs font-bold text-primary uppercase tracking-[0.2em] mb-4">ADMINISTRATOR PORTAL</h4>
                 <p className="text-on-surface-variant text-sm font-body">
                   Please enter your authorized credentials to proceed.
                 </p>
               </header>
 
-              <form className="space-y-6">
-                {/* Institutional ID */}
+              <form className="space-y-6" onSubmit={handleSubmit}>
+                {/* Email */}
                 <div className="space-y-1.5">
                   <label
                     className="block text-xs font-bold uppercase tracking-wider text-on-surface-variant font-label"
-                    htmlFor="institutional-id"
+                    htmlFor="email"
                   >
-                    Institutional ID
+                    Email Address
                   </label>
                   <div className="relative">
                     <span className="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant material-symbols-outlined text-[20px]">
-                      badge
+                      mail
                     </span>
                     <input
                       className="w-full pl-12 pr-4 py-4 bg-surface-container-low rounded-xl text-on-surface outline-none placeholder:text-on-surface-variant/40 font-body text-sm focus:ring-2 focus:ring-primary/20 focus:bg-surface-container-lowest transition-all"
-                      id="institutional-id"
-                      name="id"
-                      placeholder="EX: ADM-9928-SK"
-                      type="text"
+                      id="email"
+                      name="email"
+                      placeholder="EX: admin@sipelka.ac.id"
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                 </div>
@@ -144,6 +189,9 @@ export default function LoginPage() {
                       name="password"
                       placeholder="••••••••••••"
                       type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                   </div>
                 </div>
@@ -163,19 +211,26 @@ export default function LoginPage() {
                   </label>
                 </div>
 
+                {/* ERROR MESSAGE */}
+                {error && (
+                  <div className="p-4 rounded-xl bg-error-container text-on-error-container text-xs font-medium flex items-center gap-3">
+                    <span className="material-symbols-outlined text-[18px]">error</span>
+                    {error}
+                  </div>
+                )}
+
                 {/* CTA */}
                 <div className="pt-2">
-                  <Link href="/dashboard" className="block w-full">
-                    <button
-                      className="w-full gradient-primary text-on-primary font-bold py-5 px-8 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 ambient-shadow cursor-pointer font-label"
-                      type="button"
-                    >
-                      Sign In
-                      <span className="material-symbols-outlined text-[20px]">
-                        arrow_forward
-                      </span>
-                    </button>
-                  </Link>
+                  <button
+                    className="w-full gradient-primary text-on-primary font-bold py-5 px-8 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-3 ambient-shadow cursor-pointer font-label disabled:opacity-50"
+                    type="submit"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? "Authenticating..." : "Sign In"}
+                    <span className="material-symbols-outlined text-[20px]">
+                      arrow_forward
+                    </span>
+                  </button>
                 </div>
               </form>
 
@@ -194,6 +249,7 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
+
 
       {/* Footer */}
       <footer className="py-6 px-8 glass-effect relative z-10 border-t border-outline-variant/10">

@@ -6,6 +6,8 @@ import com.sipelka.backend.model.enums.UserRole;
 import com.sipelka.backend.repository.UserRepository;
 import com.sipelka.backend.exception.DuplicateResourceException;
 import com.sipelka.backend.exception.InvalidCredentialsException;
+import com.sipelka.backend.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,16 +18,20 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private static final String ADMIN_SECRET_TOKEN = "SIPELKA_ADMIN_SECRET_2026";
+    @Value("${app.admin-token}")
+    private String adminSecretToken;
+    
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
     private final Pbkdf2PasswordEncoder passwordEncoder = Pbkdf2PasswordEncoder.defaultsForSpringSecurity_v5_8();
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, JwtUtil jwtUtil) {
         this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
     public UserDto.Response registerAdmin(UserDto.AdminRegistrationRequest req) {
-        if (!ADMIN_SECRET_TOKEN.equals(req.getAdminToken())) {
+        if (!adminSecretToken.equals(req.getAdminToken())) {
             throw new InvalidCredentialsException("Invalid admin token");
         }
         checkDuplicates(req.getEmail(), req.getNip());
@@ -76,7 +82,7 @@ public class UserService {
         }
     }
 
-    public UserDto.Response login(UserDto.LoginRequest req) {
+    public UserDto.LoginResponse login(UserDto.LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
                 .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
@@ -88,7 +94,17 @@ public class UserService {
             throw new IllegalStateException("Account is not activated yet. Please wait for administrator approval.");
         }
 
-        return toResponse(user);
+        // Only ADMIN can login to the admin dashboard
+        if (user.getRole() != UserRole.ADMIN) {
+            throw new InvalidCredentialsException("Access denied. Admin only.");
+        }
+
+        String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
+
+        UserDto.LoginResponse res = new UserDto.LoginResponse();
+        res.setToken(token);
+        res.setUser(toResponse(user));
+        return res;
     }
 
     public List<UserDto.Response> getAllUsers() {
@@ -112,3 +128,4 @@ public class UserService {
         return res;
     }
 }
+

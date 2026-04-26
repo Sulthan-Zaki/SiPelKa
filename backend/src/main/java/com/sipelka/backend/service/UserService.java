@@ -3,6 +3,8 @@ package com.sipelka.backend.service;
 import com.sipelka.backend.dto.UserDto;
 import com.sipelka.backend.model.User;
 import com.sipelka.backend.repository.UserRepository;
+import com.sipelka.backend.exception.DuplicateResourceException;
+import com.sipelka.backend.exception.InvalidCredentialsException;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +24,10 @@ public class UserService {
 
     public UserDto.Response register(UserDto.RegistrationRequest req) {
         if (userRepository.findByEmail(req.getEmail()).isPresent()) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicateResourceException("Email already exists");
         }
         if (userRepository.findByNip(req.getNip()).isPresent()) {
-            throw new RuntimeException("NIP already exists");
+            throw new DuplicateResourceException("NIP already exists");
         }
 
         User user = new User();
@@ -40,10 +42,10 @@ public class UserService {
 
     public UserDto.Response login(UserDto.LoginRequest req) {
         User user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid credentials"));
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
         if (!passwordEncoder.matches(req.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid credentials");
+            throw new InvalidCredentialsException("Invalid credentials");
         }
         
         return toResponse(user);

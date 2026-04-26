@@ -2,6 +2,8 @@ package com.sipelka.backend.service;
 
 import com.sipelka.backend.dto.UserDto;
 import com.sipelka.backend.repository.UserRepository;
+import com.sipelka.backend.exception.DuplicateResourceException;
+import com.sipelka.backend.exception.InvalidCredentialsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,7 +77,7 @@ public class UserServiceTest {
         req2.setPassword("password");
 
         assertThatThrownBy(() -> userService.register(req2))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(DuplicateResourceException.class)
                 .hasMessage("Email already exists");
 
         // Ensure only the first user exists in Postgres
@@ -120,7 +122,7 @@ public class UserServiceTest {
 
         // Act & Assert
         assertThatThrownBy(() -> userService.login(loginReq))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(InvalidCredentialsException.class)
                 .hasMessage("Invalid credentials");
     }
 }

@@ -18,9 +18,19 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<UserDto.Response> register(@RequestBody UserDto.RegistrationRequest req) {
-        return ResponseEntity.ok(userService.register(req));
+    @PostMapping("/register/admin")
+    public ResponseEntity<UserDto.Response> registerAdmin(@RequestBody UserDto.AdminRegistrationRequest req) {
+        return ResponseEntity.ok(userService.registerAdmin(req));
+    }
+
+    @PostMapping("/register/user")
+    public ResponseEntity<UserDto.Response> registerUser(@RequestBody UserDto.UserRegistrationRequest req) {
+        return ResponseEntity.ok(userService.registerUser(req));
+    }
+
+    @PutMapping("/{id}/activate")
+    public ResponseEntity<UserDto.Response> activateUser(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.activateUser(id));
     }
 
     @PostMapping("/login")

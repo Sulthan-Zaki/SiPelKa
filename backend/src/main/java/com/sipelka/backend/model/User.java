@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.UUID;
 import com.github.f4b6a3.uuid.UuidCreator;
+import com.sipelka.backend.model.enums.UserRole;
 
 @Entity
 @Table(name = "users")
@@ -25,19 +26,40 @@ public class User {
         }
     }
 
-
     @Column(nullable = false)
     private String name;
 
     @Column(nullable = false, unique = true)
     private String email;
 
-    /**
-     * NIP (Nomor Induk Pegawai) — unique teacher/staff identification number.
-     */
     @Column(nullable = false, unique = true, length = 20)
     private String nip;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isActivated = false;
+
     @Column(nullable = false)
     private String password;
+
+    @Builder.Default
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserRole role = UserRole.RESEARCHER;
+
+    public UserRole getRole() {
+        return role;
+    }
+
+    public void setRole(UserRole role) {
+        this.role = role;
+    }
+
+    public boolean isActivated() {
+        return isActivated;
+    }
+
+    public void setActivated(boolean activated) {
+        isActivated = activated;
+    }
 }

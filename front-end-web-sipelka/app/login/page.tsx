@@ -40,13 +40,26 @@ export default function LoginPage() {
                 {/* Features mini list */}
                 <div className="space-y-3 pt-4">
                   {[
-                    { icon: "verified_user", label: "Secure Institutional Access" },
-                    { icon: "analytics", label: "Real-time Research Analytics" },
-                    { icon: "fact_check", label: "Eligibility Automation Engine" },
+                    {
+                      icon: "verified_user",
+                      label: "Secure Institutional Access",
+                    },
+                    {
+                      icon: "analytics",
+                      label: "Real-time Research Analytics",
+                    },
+                    {
+                      icon: "fact_check",
+                      label: "Eligibility Automation Engine",
+                    },
                   ].map((f) => (
                     <div key={f.label} className="flex items-center gap-3">
-                      <span className="material-symbols-outlined text-primary text-[18px]">{f.icon}</span>
-                      <span className="text-xs font-label text-on-surface-variant font-semibold">{f.label}</span>
+                      <span className="material-symbols-outlined text-primary text-[18px]">
+                        {f.icon}
+                      </span>
+                      <span className="text-xs font-label text-on-surface-variant font-semibold">
+                        {f.label}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -173,7 +186,7 @@ export default function LoginPage() {
                     className="text-primary font-bold hover:underline underline-offset-4 transition-colors"
                     href="/register"
                   >
-                    Request Access / Sign Up
+                    Sign Up
                   </Link>
                 </p>
               </div>
@@ -196,7 +209,12 @@ export default function LoginPage() {
             </span>
           </div>
           <nav className="flex flex-wrap justify-center gap-x-6 gap-y-2">
-            {["PRIVACY POLICY", "SECURITY AUDIT", "SYSTEM STATUS", "ADMIN SUPPORT"].map((link) => (
+            {[
+              "PRIVACY POLICY",
+              "SECURITY AUDIT",
+              "SYSTEM STATUS",
+              "ADMIN SUPPORT",
+            ].map((link) => (
               <a
                 key={link}
                 className="text-[10px] font-bold text-on-surface-variant/60 hover:text-primary transition-colors font-label"

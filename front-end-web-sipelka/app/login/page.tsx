@@ -28,8 +28,10 @@ export default function LoginPage() {
       // Save to cookie for Next.js middleware (Edge Runtime)
       document.cookie = `sipelka_token=${data.token}; path=/; max-age=86400`;
       
+      router.refresh();
       router.push("/dashboard");
     } catch (err: any) {
+
       if (axios.isAxiosError(err)) {
         setError(err.response?.data?.message || "Login gagal. Periksa kembali kredensial Anda.");
       } else {

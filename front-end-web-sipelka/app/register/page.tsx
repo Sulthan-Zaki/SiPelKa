@@ -1,6 +1,9 @@
+"use client"
 import { authApi } from "@/lib/authApi";
 import axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);

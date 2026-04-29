@@ -71,7 +71,7 @@ export default function LandingPage() {
             <img
               alt="SIPELKA Ecosystem"
               className="w-full h-auto rounded-2xl ambient-shadow object-cover aspect-[4/3]"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVpoG3u6zTVjheUYZyvq-ZNUAYQd0cNIMnvdh6Wedzqp0G5C6HeeKWCbNeJuWHbwi-l4qtRuP79ztd4x0ICsjC95XHpPGgr_JAUbOmh0wc0AfnwR78RdC1VHZfKQz6C-wR9EKwxcConh8Njc28YG92zqjzxlSbcJ3Cfd1nLYzcY-y0-n0ZF-s1J_goBSLnhz6vHB3_CaGoFRrt4fcmJK65DIVEQB3UI_93ME5JdR6IWJ2eXp1U3L94cbl_FH5zCmbRGInajoJwT8M"
+              src="/telkomU.jpg"
             />
           </div>
         </section>
@@ -176,7 +176,7 @@ export default function LandingPage() {
               <img
                 alt="Collaboration"
                 className="rounded-2xl ambient-shadow aspect-square object-cover w-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsvKZCGRqwd9vBkSkfquGMvR3h4mXC4gZglf5vdKt1Hl6m5X27C95C0ENOGnI5Ek7ZXPpJJOTluRLhp4tn3LrpIMb-qBjlaezGXJ3Au8iJhcA_YsxqCqET79Ty7tTCd9MsFbaQgxEcW87r86Hix-CMdQc2GR9s028Tces6CGXaSj9-dyU6JDzDL37nTDVQLKQqPoqoeqiJHXMLgx0TsTWXBrFRTH_89Wl3xdPTUT0VtqKS0fL_8mpjSbATyoWUs5WO4xCEMLAecaU"
+                src="/ProfSU.jpg"
               />
             </div>
             <div className="lg:w-1/2">

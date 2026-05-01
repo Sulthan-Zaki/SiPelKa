@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'register_screen.dart';
 import 'main_navigation.dart';
+import 'package:get/get.dart';
+import 'package:front_end_mobile_sipelka/controllers/login_controller.dart';
+import 'package:front_end_mobile_sipelka/routes/app_route.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,13 +13,21 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final loginController = Get.find<LoginController>();
+  final emailFocus = FocusNode();
+  final passwordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    emailFocus.dispose();
+    passwordFocus.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -36,10 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: const Icon(Icons.school, color: Colors.white, size: 32),
               ),
               const SizedBox(height: 24),
-              Text(
-                'SiPelKa',
-                style: theme.textTheme.displayMedium,
-              ),
+              Text('SiPelKa', style: theme.textTheme.displayMedium),
               Text(
                 'Sistem Manajemen Penelitian & Pengabdian',
                 style: theme.textTheme.labelMedium,
@@ -53,11 +61,14 @@ class _LoginScreenState extends State<LoginScreen> {
               // Email Field
               Text(
                 'Email or NIP',
-                style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _emailController,
+                textInputAction: TextInputAction.next,
+                onChanged: (value) => loginController.email.value = value,
                 decoration: const InputDecoration(
                   hintText: 'Enter your email or NIP',
                 ),
@@ -66,11 +77,14 @@ class _LoginScreenState extends State<LoginScreen> {
               // Password Field
               Text(
                 'Password',
-                style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 8),
               TextField(
-                controller: _passwordController,
+                textInputAction: TextInputAction.done,
+                onChanged: (value) => loginController.password.value = value,
                 obscureText: true,
                 decoration: const InputDecoration(
                   hintText: 'Enter your password',
@@ -78,17 +92,26 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 40),
               // Login Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate to Dashboard
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainNavigation()),
-                    );
-                  },
-                  child: const Text('Login'),
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: loginController.isLoading.value
+                        ? null
+                        : () => loginController.login(),
+                    child: loginController.isLoading.value
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
+                            ),
+                          )
+                        : const Text('Login'),
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -103,10 +126,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const RegisterScreen()),
-                        );
+                        Get.toNamed(AppRoutes.register);
                       },
                       child: Text(
                         'Register',

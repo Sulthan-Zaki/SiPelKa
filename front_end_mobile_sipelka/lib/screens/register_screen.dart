@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:front_end_mobile_sipelka/screens/login_screen.dart';
+import 'package:front_end_mobile_sipelka/controllers/register_controller.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -8,16 +11,12 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
-  final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _nipController = TextEditingController();
-  final _passwordController = TextEditingController();
-  String _selectedRole = 'Researcher';
+  final registerController = Get.find<RegisterController>();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -33,10 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Create Account',
-                style: theme.textTheme.displayMedium,
-              ),
+              Text('Create Account', style: theme.textTheme.displayMedium),
               Text(
                 'Join the research community',
                 style: theme.textTheme.labelMedium,
@@ -45,56 +41,65 @@ class _RegisterScreenState extends State<RegisterScreen> {
               // Name Field
               _buildFieldLabel(theme, 'Full Name'),
               TextField(
-                controller: _nameController,
-                decoration: const InputDecoration(hintText: 'Enter your full name'),
+                onChanged: (value) => registerController.name.value = value,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your full name',
+                ),
               ),
               const SizedBox(height: 20),
               // Email Field
               _buildFieldLabel(theme, 'Email Address'),
               TextField(
-                controller: _emailController,
+                onChanged: (value) => registerController.email.value = value,
                 decoration: const InputDecoration(hintText: 'Enter your email'),
               ),
               const SizedBox(height: 20),
               // NIP Field
               _buildFieldLabel(theme, 'NIP / ID Number'),
               TextField(
-                controller: _nipController,
+                onChanged: (value) => registerController.nip.value = value,
                 decoration: const InputDecoration(hintText: 'Enter your NIP'),
               ),
               const SizedBox(height: 20),
               // Role Dropdown
               _buildFieldLabel(theme, 'Role'),
               DropdownButtonFormField<String>(
-                value: _selectedRole,
+                value: registerController.role.value.isEmpty
+                    ? 'Researcher'
+                    : registerController.role.value,
                 decoration: const InputDecoration(),
                 items: ['Researcher', 'Reviewer', 'Admin'].map((role) {
                   return DropdownMenuItem(value: role, child: Text(role));
                 }).toList(),
                 onChanged: (value) {
-                  setState(() {
-                    _selectedRole = value!;
-                  });
+                  if (value != null) {
+                    registerController.role.value = value;
+                  }
                 },
               ),
               const SizedBox(height: 20),
               // Password Field
               _buildFieldLabel(theme, 'Password'),
               TextField(
-                controller: _passwordController,
+                onChanged: (value) => registerController.password.value = value,
                 obscureText: true,
-                decoration: const InputDecoration(hintText: 'Create a password'),
+                decoration: const InputDecoration(
+                  hintText: 'Create a password',
+                ),
               ),
               const SizedBox(height: 40),
               // Register Button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Navigate back to login or dashboard
-                    Navigator.pop(context);
-                  },
-                  child: const Text('Register'),
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  child: registerController.isLoading.value
+                      ? const CircularProgressIndicator()
+                      : ElevatedButton(
+                          onPressed: () {
+                            registerController.register();
+                          },
+                          child: const Text('Register'),
+                        ),
                 ),
               ),
               const SizedBox(height: 24),
@@ -110,7 +115,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       padding: const EdgeInsets.only(bottom: 8.0),
       child: Text(
         label,
-        style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+        style: theme.textTheme.labelMedium?.copyWith(
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

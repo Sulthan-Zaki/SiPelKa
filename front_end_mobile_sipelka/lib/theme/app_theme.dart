@@ -48,18 +48,13 @@ class AppTheme {
           height: 1.6,
           color: onBackgroundColor,
         ),
-        labelMedium: GoogleFonts.inter(
-          fontSize: 14,
-          color: onSurfaceVariant,
-        ),
+        labelMedium: GoogleFonts.inter(fontSize: 14, color: onSurfaceVariant),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: primaryColor,
           foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         ),

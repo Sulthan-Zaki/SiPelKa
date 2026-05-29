@@ -10,12 +10,14 @@ import com.sipelka.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional
 public class UserService {
 
     @Value("${app.admin-token}")
@@ -111,6 +113,56 @@ public class UserService {
         return userRepository.findAll().stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
+    }
+
+    public UserDto.Response getUserById(UUID id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return toResponse(user);
+    }
+
+    public UserDto.Response createUser(UserDto.CreateUserRequest req) {
+        checkDuplicates(req.getEmail(), req.getNip());
+
+        User user = new User();
+        user.setName(req.getName());
+        user.setEmail(req.getEmail());
+        user.setNip(req.getNip());
+        user.setPassword(passwordEncoder.encode(req.getPassword()));
+        user.setRole(req.getRole() != null ? req.getRole() : UserRole.RESEARCHER);
+        user.setActivated(req.isActivated());
+
+        return toResponse(userRepository.save(user));
+    }
+
+    public UserDto.Response updateUser(UUID id, UserDto.UpdateUserRequest req) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.getEmail().equals(req.getEmail())) {
+            if (userRepository.findByEmail(req.getEmail()).isPresent()) {
+                throw new DuplicateResourceException("Email already exists");
+            }
+            user.setEmail(req.getEmail());
+        }
+        if (!user.getNip().equals(req.getNip())) {
+            if (userRepository.findByNip(req.getNip()).isPresent()) {
+                throw new DuplicateResourceException("NIP already exists");
+            }
+            user.setNip(req.getNip());
+        }
+
+        user.setName(req.getName());
+        if (req.getRole() != null) {
+            user.setRole(req.getRole());
+        }
+        user.setActivated(req.isActivated());
+
+        if (req.getPassword() != null && !req.getPassword().trim().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(req.getPassword()));
+        }
+
+        return toResponse(userRepository.save(user));
     }
 
     public void deleteUser(UUID id) {

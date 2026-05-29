@@ -1,5 +1,6 @@
 package com.sipelka.backend.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.sipelka.backend.model.enums.UserRole;
 import lombok.Data;
 import java.util.UUID;
@@ -31,12 +32,38 @@ public class UserDto {
     }
 
     @Data
+    public static class CreateUserRequest {
+        private String name;
+        private String email;
+        private String nip;
+        private String password;
+        private UserRole role;
+        
+        @JsonProperty("isActivated")
+        private boolean isActivated;
+    }
+
+    @Data
+    public static class UpdateUserRequest {
+        private String name;
+        private String email;
+        private String nip;
+        private String password;
+        private UserRole role;
+        
+        @JsonProperty("isActivated")
+        private boolean isActivated;
+    }
+
+    @Data
     public static class Response {
         private UUID id;
         private String name;
         private String email;
         private String nip;
         private UserRole role;
+        
+        @JsonProperty("isActivated")
         private boolean isActivated;
     }
 

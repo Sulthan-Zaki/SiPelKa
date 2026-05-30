@@ -1,3 +1,6 @@
 .vscode/
 PRD.md
 *drawio.xml
+.agents/
+skills-lock.json
+AGENTS.md

@@ -28,4 +28,15 @@ public class LogbookPenelitianController {
     public ResponseEntity<List<LogbookPenelitianDTO>> getLogbooksByProposal(@PathVariable UUID proposalId) {
         return ResponseEntity.ok(logbookPenelitianService.getLogbooksByProposal(proposalId));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LogbookPenelitianDTO> updateLogbook(@PathVariable UUID id, @RequestBody LogbookPenelitianDTO dto) {
+        return ResponseEntity.ok(logbookPenelitianService.updateLogbook(id, dto));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLogbook(@PathVariable UUID id) {
+        logbookPenelitianService.deleteLogbook(id);
+        return ResponseEntity.noContent().build();
+    }
 }

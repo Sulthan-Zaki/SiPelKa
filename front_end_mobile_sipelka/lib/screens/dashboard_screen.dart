@@ -1,115 +1,155 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'daily_logbook_screen.dart';
 import 'proposal_submission_screen.dart';
+import 'notification_screen.dart';
+import 'package:front_end_mobile_sipelka/controllers/dashboard_controller.dart';
+import 'package:front_end_mobile_sipelka/models/dashboard_stats.dart';
+import 'package:front_end_mobile_sipelka/models/logbook.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final controller = Get.put(DashboardController(), permanent: true);
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Dashboard', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Dashboard',
+            style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
+          Obx(() => Stack(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.notifications_outlined),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const NotificationScreen()),
+                    ),
+                  ),
+                  if (controller.unreadNotifications.value > 0)
+                    Positioned(
+                      right: 6,
+                      top: 6,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          '${controller.unreadNotifications.value}',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 10),
+                        ),
+                      ),
+                    ),
+                ],
+              )),
         ],
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome back,',
-              style: theme.textTheme.labelMedium,
-            ),
-            Text(
-              'Dr. Sulthan Zaki',
-              style: theme.textTheme.displayMedium?.copyWith(fontSize: 24),
-            ),
-            const SizedBox(height: 32),
-            // Stats Cards
-            Row(
-              children: [
-                Expanded(
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const DailyLogbookScreen()),
-                    ),
-                    child: _buildStatCard(
-                      context,
-                      'Active Grants',
-                      '3',
-                      Icons.assignment_turned_in_outlined,
-                      theme.colorScheme.primary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: InkWell(
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ProposalSubmissionScreen()),
-                    ),
-                    child: _buildStatCard(
-                      context,
-                      'Proposals',
-                      '12',
-                      Icons.description_outlined,
-                      theme.colorScheme.tertiary,
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Welcome back,',
+                style: theme.textTheme.labelMedium,
+              ),
+              Text(
+                controller.userName.value,
+                style: theme.textTheme.displayMedium?.copyWith(fontSize: 24),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                children: [
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const DailyLogbookScreen()),
+                      ),
+                      child: _buildStatCard(
+                        context,
+                        'Active Grants',
+                        controller.activeGrants.value.toString(),
+                        Icons.assignment_turned_in_outlined,
+                        theme.colorScheme.primary,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            // Recent Logbooks Section
-            _buildSectionHeader(theme, 'Recent Logbooks', () {}),
-            const SizedBox(height: 16),
-            _buildLogbookItem(
-              theme,
-              'Smart Farming AI',
-              'Field Data Collection - Phase 1',
-              '2 hours ago',
-            ),
-            _buildLogbookItem(
-              theme,
-              'Renewable Energy',
-              'Solar Panel Efficiency Test',
-              'Yesterday',
-            ),
-            const SizedBox(height: 32),
-            // Deadlines Section
-            _buildSectionHeader(theme, 'Upcoming Deadlines', () {}),
-            const SizedBox(height: 16),
-            _buildDeadlineItem(
-              theme,
-              'Mid-term Report',
-              'Hibah Internal 2026',
-              'May 15, 2026',
-              true,
-            ),
-            _buildDeadlineItem(
-              theme,
-              'Final Submission',
-              'International Research Grant',
-              'June 01, 2026',
-              false,
-            ),
-          ],
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: InkWell(
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => const ProposalSubmissionScreen()),
+                      ),
+                      child: _buildStatCard(
+                        context,
+                        'Proposals',
+                        controller.totalProposals.value.toString(),
+                        Icons.description_outlined,
+                        theme.colorScheme.tertiary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              _buildSectionHeader(theme, 'Recent Logbooks', () {}),
+              const SizedBox(height: 16),
+              if (controller.recentLogbooks.isEmpty)
+                _buildEmptyState(theme, 'No recent logbooks')
+              else
+                ...controller.recentLogbooks.map(
+                    (logbook) => _buildLogbookItem(theme, logbook)),
+              const SizedBox(height: 32),
+              _buildSectionHeader(theme, 'Upcoming Deadlines', () {}),
+              const SizedBox(height: 16),
+              if (controller.upcomingDeadlines.isEmpty)
+                _buildEmptyState(theme, 'No upcoming deadlines')
+              else
+                ...controller.upcomingDeadlines.map(
+                    (deadline) => _buildDeadlineItem(theme, deadline)),
+            ],
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, String message) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        message,
+        textAlign: TextAlign.center,
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant.withOpacity(0.6),
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(BuildContext context, String title, String value,
+      IconData icon, Color color) {
     final theme = Theme.of(context);
     return Container(
       padding: const EdgeInsets.all(20),
@@ -129,27 +169,31 @@ class DashboardScreen extends StatelessWidget {
         children: [
           Icon(icon, color: color, size: 28),
           const SizedBox(height: 16),
-          Text(value, style: theme.textTheme.displayMedium?.copyWith(fontSize: 28)),
+          Text(value,
+              style:
+                  theme.textTheme.displayMedium?.copyWith(fontSize: 28)),
           Text(title, style: theme.textTheme.labelMedium),
         ],
       ),
     );
   }
 
-  Widget _buildSectionHeader(ThemeData theme, String title, VoidCallback onTap) {
+  Widget _buildSectionHeader(
+      ThemeData theme, String title, VoidCallback onTap) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Text(title, style: theme.textTheme.headlineSmall),
         TextButton(
           onPressed: onTap,
-          child: Text('See All', style: TextStyle(color: theme.colorScheme.primary)),
+          child: Text('See All',
+              style: TextStyle(color: theme.colorScheme.primary)),
         ),
       ],
     );
   }
 
-  Widget _buildLogbookItem(ThemeData theme, String project, String activity, String time) {
+  Widget _buildLogbookItem(ThemeData theme, Logbook logbook) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
@@ -165,30 +209,42 @@ class DashboardScreen extends StatelessWidget {
               color: Colors.white,
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(Icons.history_edu, color: theme.colorScheme.primary, size: 20),
+            child: Icon(Icons.history_edu,
+                color: theme.colorScheme.primary, size: 20),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(project, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(activity, style: theme.textTheme.labelMedium?.copyWith(fontSize: 12)),
+                Text(
+                  logbook.deskripsiProgress,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold, fontSize: 14),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  logbook.formattedMonthDay,
+                  style: theme.textTheme.labelMedium?.copyWith(fontSize: 12),
+                ),
               ],
             ),
           ),
-          Text(time, style: theme.textTheme.labelMedium?.copyWith(fontSize: 10)),
         ],
       ),
     );
   }
 
-  Widget _buildDeadlineItem(ThemeData theme, String task, String grant, String date, bool isUrgent) {
+  Widget _buildDeadlineItem(ThemeData theme, Deadline deadline) {
+    final dateStr =
+        '${deadline.deadline.day} ${_months[deadline.deadline.month - 1]} ${deadline.deadline.year}';
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
+        border: Border.all(
+            color: theme.colorScheme.outlineVariant.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
@@ -197,7 +253,9 @@ class DashboardScreen extends StatelessWidget {
             width: 4,
             height: 40,
             decoration: BoxDecoration(
-              color: isUrgent ? theme.colorScheme.error : theme.colorScheme.tertiary,
+              color: deadline.isUrgent
+                  ? theme.colorScheme.error
+                  : theme.colorScheme.tertiary,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -206,18 +264,32 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(task, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold, fontSize: 14)),
-                Text(grant, style: theme.textTheme.labelMedium?.copyWith(fontSize: 12)),
+                Text(deadline.task,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(deadline.grantName,
+                    style:
+                        theme.textTheme.labelMedium?.copyWith(fontSize: 12)),
               ],
             ),
           ),
-          Text(date, style: theme.textTheme.labelMedium?.copyWith(
-            fontSize: 12,
-            color: isUrgent ? theme.colorScheme.error : null,
-            fontWeight: isUrgent ? FontWeight.bold : null,
-          )),
+          Text(
+            dateStr,
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontSize: 12,
+              color: deadline.isUrgent
+                  ? theme.colorScheme.error
+                  : null,
+              fontWeight: deadline.isUrgent ? FontWeight.bold : null,
+            ),
+          ),
         ],
       ),
     );
   }
+
+  static const List<String> _months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+  ];
 }

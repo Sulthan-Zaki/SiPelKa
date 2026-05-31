@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'dashboard_screen.dart';
 import 'discovery_screen.dart';
 import 'profile_screen.dart';
+import 'package:front_end_mobile_sipelka/controllers/dashboard_controller.dart';
+import 'package:front_end_mobile_sipelka/controllers/discovery_controller.dart';
+import 'package:front_end_mobile_sipelka/controllers/profile_controller.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -18,6 +22,14 @@ class _MainNavigationState extends State<MainNavigation> {
     const DiscoveryScreen(),
     const ProfileScreen(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    Get.put(DashboardController(), permanent: true);
+    Get.put(DiscoveryController(), permanent: true);
+    Get.put(ProfileController(), permanent: true);
+  }
 
   @override
   Widget build(BuildContext context) {

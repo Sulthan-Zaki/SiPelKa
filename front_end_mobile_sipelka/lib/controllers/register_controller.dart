@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/services/api_service.dart';
-import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
-import 'package:front_end_mobile_sipelka/models/storage_key.dart';
 
 class RegisterController extends GetxController {
   final name = ''.obs;
@@ -42,27 +40,21 @@ class RegisterController extends GetxController {
           'password': password.value,
         },
       );
-      if (response.statusCode != 200) {
-        throw Exception('Failed to register ${response.statusCode}');
-      }
 
-      if (response.statusCode == 200) {
-        Get.snackbar(
-          'Success',
-          'Registered successfully. Please wait for admin activation.',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Color(0xFF1B5E20),
-          duration: const Duration(seconds: 4),
-        );
-        Future.delayed(const Duration(seconds: 1), () {
-          isLoading.value = false;
-          Get.toNamed('/login');
-        });
-      }
+      Get.snackbar(
+        'Success',
+        'Registered successfully. Please wait for admin activation.',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: const Color(0xFF1B5E20),
+        duration: const Duration(seconds: 4),
+      );
+      Future.delayed(const Duration(seconds: 1), () {
+        Get.toNamed('/login');
+      });
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to register. Please try again.}',
+        'Failed to register. Please try again.',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Get.theme.colorScheme.error,
       );

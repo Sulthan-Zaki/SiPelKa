@@ -96,11 +96,6 @@ public class UserService {
             throw new IllegalStateException("Account is not activated yet. Please wait for administrator approval.");
         }
 
-        // Only ADMIN can login to the admin dashboard
-        if (user.getRole() != UserRole.ADMIN) {
-            throw new InvalidCredentialsException("Access denied. Admin only.");
-        }
-
         String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
 
         UserDto.LoginResponse res = new UserDto.LoginResponse();

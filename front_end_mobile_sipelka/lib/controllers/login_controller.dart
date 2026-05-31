@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:front_end_mobile_sipelka/services/api_service.dart';
 import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/models/storage_key.dart';
+import 'package:front_end_mobile_sipelka/screens/main_navigation.dart';
 
 class LoginController extends GetxController {
   final email = ''.obs;
@@ -37,6 +38,7 @@ class LoginController extends GetxController {
       await LocalStorageService.write(StorageKey.token, token);
       await LocalStorageService.write(StorageKey.user, user);
       await LocalStorageService.write(StorageKey.isLoggedIn, true);
+      apiService.setToken(token);
 
       Get.snackbar(
         'Success',
@@ -45,8 +47,7 @@ class LoginController extends GetxController {
         backgroundColor: Get.theme.colorScheme.primary,
         duration: const Duration(seconds: 1),
       );
-      // Navigate to main screen or dashboard
-      // Get.to(() => const MainNavigation());
+      Get.to(() => const MainNavigation());
     } catch (e) {
       Get.snackbar(
         'Error',

@@ -1,4 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'local_storage_service.dart';
+import '../models/storage_key.dart';
 
 class ApiService {
   static final ApiService _instance = ApiService._internal();
@@ -7,7 +10,11 @@ class ApiService {
 
   late final Dio dio;
 
-  final String backendUrl = const String.fromEnvironment('BACKEND_URL');
+  String get backendUrl {
+    final fromEnv = const String.fromEnvironment('BACKEND_URL');
+    if (fromEnv.isNotEmpty) return fromEnv;
+    return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+  }
 
   ApiService._internal() {
     dio = Dio(
@@ -43,6 +50,13 @@ class ApiService {
         },
       ),
     );
+  }
+
+  static Future<void> init() async {
+    final token = await LocalStorageService.read(StorageKey.token);
+    if (token != null) {
+      _instance.setToken(token as String);
+    }
   }
 
   Future<Response> get(
@@ -105,5 +119,12 @@ class ApiService {
 
   void clearToken() {
     dio.options.headers.remove('Authorization');
+  }
+
+  Future<Response> uploadFile(String path, String filePath) async {
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(filePath),
+    });
+    return await dio.post(path, data: formData);
   }
 }

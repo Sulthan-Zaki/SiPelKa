@@ -9,9 +9,16 @@ import com.sipelka.backend.model.enums.StatusProposal;
 import com.sipelka.backend.repository.ProgramHibahRepository;
 import com.sipelka.backend.repository.ProposalRepository;
 import com.sipelka.backend.repository.UserRepository;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -28,6 +35,7 @@ public class ProposalService {
         this.programHibahRepository = programHibahRepository;
     }
 
+    @CacheEvict(value = "proposalStats", allEntries = true)
     public ProposalDTO createProposal(ProposalDTO dto) {
         User peneliti = userRepository.findById(dto.getPenelitiId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", dto.getPenelitiId()));
@@ -49,6 +57,7 @@ public class ProposalService {
         return toDto(proposalRepository.save(proposal));
     }
 
+    @CacheEvict(value = "proposalStats", allEntries = true)
     public ProposalDTO updateProposal(UUID id, ProposalDTO dto) {
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
@@ -68,6 +77,7 @@ public class ProposalService {
         return toDto(proposalRepository.save(proposal));
     }
 
+    @CacheEvict(value = "proposalStats", allEntries = true)
     public ProposalDTO submitProposal(UUID id) {
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
@@ -108,19 +118,66 @@ public class ProposalService {
         if (!userRepository.existsById(penelitiId)) {
             throw new ResourceNotFoundException("User", "id", penelitiId);
         }
-        return proposalRepository.findAll().stream()
-                .filter(p -> p.getPeneliti().getId().equals(penelitiId))
+        return proposalRepository.findByPenelitiIdWithDetails(penelitiId).stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Newest proposals first, limited to {@code limit} rows. Lets the dashboard's
+     * "Recent Submissions" widget avoid pulling the entire proposals table.
+     */
+    public List<ProposalDTO> getRecentProposals(int limit) {
+        int size = limit > 0 ? limit : 5;
+        return proposalRepository.findRecentWithDetails(PageRequest.of(0, size)).stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    @Cacheable("proposalStats")
     public ProposalStats getStats() {
-        List<Proposal> all = proposalRepository.findAllWithPenelitiAndHibah();
-        int total = all.size();
-        int active = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.UNDER_REVIEW || p.getStatusProposal() == StatusProposal.APPROVED).count();
-        int pending = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.SUBMITTED || p.getStatusProposal() == StatusProposal.DRAFT).count();
-        int ruleFailed = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.RULE_FAILED).count();
-        return new ProposalStats(total, active, pending, ruleFailed);
+        Map<StatusProposal, Long> counts = new EnumMap<>(StatusProposal.class);
+        for (Object[] row : proposalRepository.countGroupedByStatus()) {
+            counts.put((StatusProposal) row[0], (Long) row[1]);
+        }
+        long total = counts.values().stream().mapToLong(Long::longValue).sum();
+        long active = count(counts, StatusProposal.UNDER_REVIEW) + count(counts, StatusProposal.APPROVED);
+        long pending = count(counts, StatusProposal.SUBMITTED) + count(counts, StatusProposal.DRAFT);
+        long ruleFailed = count(counts, StatusProposal.RULE_FAILED);
+        return new ProposalStats((int) total, (int) active, (int) pending, (int) ruleFailed);
+    }
+
+    private static long count(Map<StatusProposal, Long> counts, StatusProposal status) {
+        return counts.getOrDefault(status, 0L);
+    }
+
+    /**
+     * Proposal counts bucketed by calendar year+month over the trailing
+     * {@code months} window, computed at the database level and zero-filled so the
+     * series is contiguous. Replaces the frontend's name-only bucketing, which
+     * collided proposals from the same month across different years.
+     */
+    public List<MonthlyStat> getMonthlyStats(int months) {
+        int window = months > 0 ? months : 6;
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime since = now.minusMonths(window - 1L)
+                .withDayOfMonth(1).withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+        Map<String, Long> byKey = new java.util.HashMap<>();
+        for (Object[] row : proposalRepository.countMonthlySince(since)) {
+            int year = ((Number) row[0]).intValue();
+            int month = ((Number) row[1]).intValue();
+            long cnt = ((Number) row[2]).longValue();
+            byKey.put(year + "-" + month, cnt);
+        }
+
+        List<MonthlyStat> result = new ArrayList<>(window);
+        for (int i = window - 1; i >= 0; i--) {
+            LocalDateTime d = now.minusMonths(i);
+            String key = d.getYear() + "-" + d.getMonthValue();
+            result.add(new MonthlyStat(d.getYear(), d.getMonthValue(), byKey.getOrDefault(key, 0L).intValue()));
+        }
+        return result;
     }
 
     public List<ProposalDTO> getFlaggedProposals() {
@@ -151,4 +208,6 @@ public class ProposalService {
     }
 
     public record ProposalStats(int total, int active, int pending, int ruleFailed) {}
+
+    public record MonthlyStat(int year, int month, int count) {}
 }

@@ -7,10 +7,12 @@ import com.sipelka.backend.model.Proposal;
 import com.sipelka.backend.model.User;
 import com.sipelka.backend.model.enums.StatusPencairan;
 import com.sipelka.backend.repository.PencairanDanaRepository;
+import com.sipelka.backend.repository.ProgramHibahRepository;
 import com.sipelka.backend.repository.ProposalRepository;
 import com.sipelka.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -22,11 +24,13 @@ public class PencairanDanaService {
     private final PencairanDanaRepository pencairanDanaRepository;
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
+    private final ProgramHibahRepository programHibahRepository;
 
-    public PencairanDanaService(PencairanDanaRepository pencairanDanaRepository, ProposalRepository proposalRepository, UserRepository userRepository) {
+    public PencairanDanaService(PencairanDanaRepository pencairanDanaRepository, ProposalRepository proposalRepository, UserRepository userRepository, ProgramHibahRepository programHibahRepository) {
         this.pencairanDanaRepository = pencairanDanaRepository;
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
+        this.programHibahRepository = programHibahRepository;
     }
 
     public PencairanDanaDTO createPencairan(PencairanDanaDTO dto) {
@@ -78,6 +82,19 @@ public class PencairanDanaService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Truthful funding figures for the dashboard: the total program ceiling versus
+     * money actually disbursed (CAIR), in process (PROSES), and pending (PENDING).
+     * All sums are computed at the database level.
+     */
+    public PencairanStats getStats() {
+        BigDecimal totalCeiling = programHibahRepository.sumTotalDanaMaksimal();
+        BigDecimal totalDisbursed = pencairanDanaRepository.sumJumlahDanaByStatus(StatusPencairan.CAIR);
+        BigDecimal totalInProcess = pencairanDanaRepository.sumJumlahDanaByStatus(StatusPencairan.PROSES);
+        BigDecimal totalPending = pencairanDanaRepository.sumJumlahDanaByStatus(StatusPencairan.PENDING);
+        return new PencairanStats(totalCeiling, totalDisbursed, totalInProcess, totalPending);
+    }
+
     private PencairanDanaDTO toDto(PencairanDana pencairan) {
         PencairanDanaDTO dto = new PencairanDanaDTO();
         dto.setId(pencairan.getId());
@@ -92,4 +109,7 @@ public class PencairanDanaService {
         dto.setBuktiTransferUrl(pencairan.getBuktiTransferUrl());
         return dto;
     }
+
+    public record PencairanStats(BigDecimal totalCeiling, BigDecimal totalDisbursed,
+                                 BigDecimal totalInProcess, BigDecimal totalPending) {}
 }

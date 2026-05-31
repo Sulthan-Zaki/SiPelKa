@@ -54,6 +54,18 @@ public class ProposalController {
         return ResponseEntity.ok(proposalService.getStats());
     }
 
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<List<ProposalService.MonthlyStat>> getMonthlyStats(
+            @RequestParam(name = "months", defaultValue = "6") int months) {
+        return ResponseEntity.ok(proposalService.getMonthlyStats(months));
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<ProposalDTO>> getRecentProposals(
+            @RequestParam(name = "limit", defaultValue = "5") int limit) {
+        return ResponseEntity.ok(proposalService.getRecentProposals(limit));
+    }
+
     @GetMapping("/flagged")
     public ResponseEntity<List<ProposalDTO>> getFlaggedProposals() {
         return ResponseEntity.ok(proposalService.getFlaggedProposals());

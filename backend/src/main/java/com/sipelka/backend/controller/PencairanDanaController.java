@@ -42,4 +42,9 @@ public class PencairanDanaController {
     public ResponseEntity<List<PencairanDanaDTO>> getAllPencairan() {
         return ResponseEntity.ok(pencairanDanaService.getAllPencairan());
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<PencairanDanaService.PencairanStats> getStats() {
+        return ResponseEntity.ok(pencairanDanaService.getStats());
+    }
 }

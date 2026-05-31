@@ -3,6 +3,7 @@ import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/models/storage_key.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   group('LocalStorageService', () {
     test('write and read string value', () async {
       await LocalStorageService.write(StorageKey.token, 'test-token');

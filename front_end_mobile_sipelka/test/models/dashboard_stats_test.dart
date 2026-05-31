@@ -49,7 +49,7 @@ void main() {
 
       expect(deadline.task, 'Mid-term Report');
       expect(deadline.grantName, 'Hibah Internal 2026');
-      expect(deadline.deadline, '2026-05-15');
+      expect(deadline.deadline, DateTime(2026, 5, 15));
       expect(deadline.isUrgent, true);
     });
 
@@ -88,7 +88,7 @@ void main() {
 
       expect(deadline.task, 'Final Submission');
       expect(deadline.grantName, 'Hibah Nasional 2026');
-      expect(deadline.deadline, '2026-06-01');
+      expect(deadline.deadline, DateTime(2026, 6, 1));
       expect(deadline.isUrgent, false);
     });
   });

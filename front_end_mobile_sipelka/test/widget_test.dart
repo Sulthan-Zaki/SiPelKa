@@ -102,7 +102,7 @@ void main() {
       final deadline = Deadline(
         task: 'Final Report',
         grantName: 'Test Grant',
-        deadline: '2026-06-01',
+        deadline: DateTime(2026, 6, 1),
         isUrgent: true,
       );
 

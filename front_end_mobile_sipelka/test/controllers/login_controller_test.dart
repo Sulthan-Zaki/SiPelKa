@@ -1,13 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/controllers/login_controller.dart';
-import 'package:front_end_mobile_sipelka/services/api_service.dart';
-import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
-import 'package:front_end_mobile_sipelka/models/storage_key.dart';
 
 void main() {
   setUp(() {
-    // Clear any previous state
     Get.reset();
   });
 

@@ -5,7 +5,7 @@ class Grant {
   final String? deskripsi;
   final String? bidangFokus;
   final DateTime tanggalBuka;
-  final DateTime tanggalTutup;
+  final DateTime? tanggalTutup;
   final double? totalDanaMaksimal;
   final DateTime? createdAt;
 
@@ -23,11 +23,12 @@ class Grant {
 
   bool get isOpen {
     final now = DateTime.now();
-    return now.isAfter(tanggalBuka) && now.isBefore(tanggalTutup);
+    if (tanggalTutup == null) return false;
+    return now.isAfter(tanggalBuka) && now.isBefore(tanggalTutup!);
   }
 
   int? get daysRemaining {
-    return tanggalTutup.difference(DateTime.now()).inDays;
+    return tanggalTutup?.difference(DateTime.now()).inDays;
   }
 
   factory Grant.fromJson(Map<String, dynamic> json) {
@@ -38,7 +39,9 @@ class Grant {
       deskripsi: json['deskripsi'] as String?,
       bidangFokus: json['bidangFokus'] as String?,
       tanggalBuka: DateTime.parse(json['tanggalBuka'] as String),
-      tanggalTutup: DateTime.parse(json['tanggalTutup'] as String),
+      tanggalTutup: json['tanggalTutup'] != null
+          ? DateTime.parse(json['tanggalTutup'] as String)
+          : null,
       totalDanaMaksimal: (json['totalDanaMaksimal'] as num?)?.toDouble(),
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
@@ -53,7 +56,7 @@ class Grant {
     'deskripsi': deskripsi,
     'bidangFokus': bidangFokus,
     'tanggalBuka': tanggalBuka.toIso8601String(),
-    'tanggalTutup': tanggalTutup.toIso8601String(),
+    'tanggalTutup': tanggalTutup?.toIso8601String(),
     'totalDanaMaksimal': totalDanaMaksimal,
     'createdAt': createdAt?.toIso8601String(),
   };

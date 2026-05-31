@@ -13,7 +13,11 @@ class ApiService {
   String get backendUrl {
     final fromEnv = const String.fromEnvironment('BACKEND_URL');
     if (fromEnv.isNotEmpty) return fromEnv;
-    return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+    try {
+      return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+    } catch (_) {
+      return 'http://localhost:8080';
+    }
   }
 
   ApiService._internal() {

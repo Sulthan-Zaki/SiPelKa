@@ -10,6 +10,7 @@ import com.sipelka.backend.repository.PencairanDanaRepository;
 import com.sipelka.backend.repository.ProposalRepository;
 import com.sipelka.backend.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,6 +30,7 @@ public class PencairanDanaService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public PencairanDanaDTO createPencairan(PencairanDanaDTO dto) {
         Proposal proposal = proposalRepository.findById(dto.getProposalId())
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", dto.getProposalId()));
@@ -47,6 +49,7 @@ public class PencairanDanaService {
         return toDto(pencairanDanaRepository.save(pencairan));
     }
 
+    @Transactional
     public PencairanDanaDTO updateStatusPencairan(UUID id, StatusPencairan status, String buktiTransferUrl) {
         PencairanDana pencairan = pencairanDanaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("PencairanDana", "id", id));

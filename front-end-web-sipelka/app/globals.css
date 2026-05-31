@@ -214,4 +214,19 @@ body {
   .gradient-primary {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-container) 100%);
   }
+
+  /* Toast slide-up animation */
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .animate-slide-up {
+    animation: slide-up 0.3s ease-out;
+  }
 }

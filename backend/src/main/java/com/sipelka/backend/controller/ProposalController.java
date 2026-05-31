@@ -58,4 +58,12 @@ public class ProposalController {
     public ResponseEntity<List<ProposalDTO>> getFlaggedProposals() {
         return ResponseEntity.ok(proposalService.getFlaggedProposals());
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ProposalDTO> updateProposalStatus(
+            @PathVariable UUID id,
+            @RequestBody java.util.Map<String, String> body) {
+        String status = body.get("status");
+        return ResponseEntity.ok(proposalService.updateStatus(id, status));
+    }
 }

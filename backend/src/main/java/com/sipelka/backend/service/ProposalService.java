@@ -130,6 +130,14 @@ public class ProposalService {
                 .collect(Collectors.toList());
     }
 
+    public ProposalDTO updateStatus(UUID id, String status) {
+        Proposal proposal = proposalRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
+
+        proposal.setStatusProposal(StatusProposal.valueOf(status));
+        return toDto(proposalRepository.save(proposal));
+    }
+
     private ProposalDTO toDto(Proposal proposal) {
         ProposalDTO dto = new ProposalDTO();
         dto.setId(proposal.getId());

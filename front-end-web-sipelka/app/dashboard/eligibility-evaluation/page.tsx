@@ -1,25 +1,54 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { proposalApi, type ProposalResponse } from "@/lib/proposalApi";
+import { useToast } from "@/components/Toast";
 
 export default function EligibilityEvaluationPage() {
+  const { toast } = useToast();
   const [flaggedProposals, setFlaggedProposals] = useState<ProposalResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionId, setActionId] = useState<string | null>(null);
+  const [reviewNotes, setReviewNotes] = useState("");
+  const [notesModal, setNotesModal] = useState<{ id: string; action: string } | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await proposalApi.getFlagged();
+      setFlaggedProposals(data);
+    } catch (err) {
+      console.error("Failed to fetch flagged proposals:", err);
+      toast("Failed to load eligibility data", "error");
+    } finally {
+      setLoading(false);
+    }
+  }, [toast]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await proposalApi.getFlagged();
-        setFlaggedProposals(data);
-      } catch (err) {
-        console.error("Failed to fetch flagged proposals:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
-  }, []);
+  }, [fetchData]);
+
+  const handleAction = async (id: string, status: string) => {
+    setActionId(id);
+    try {
+      await proposalApi.updateStatus(id, status, reviewNotes || undefined);
+      toast(`Proposal ${status === "APPROVED" ? "approved" : status === "RULE_FAILED" ? "rejected" : "flagged for review"} successfully`, "success");
+      setNotesModal(null);
+      setReviewNotes("");
+      await fetchData();
+    } catch (err) {
+      console.error("Failed to update proposal status:", err);
+      toast("Failed to update proposal status", "error");
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const openActionModal = (id: string, action: string) => {
+    setNotesModal({ id, action });
+    setReviewNotes("");
+  };
 
   const stats = {
     total: flaggedProposals.length,
@@ -55,11 +84,59 @@ export default function EligibilityEvaluationPage() {
 
   return (
     <>
+      {/* Review Notes Modal */}
+      {notesModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setNotesModal(null)}>
+          <div className="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-md p-6" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-lg font-headline font-bold text-primary mb-2">
+              {notesModal.action === "APPROVED" ? "Approve Proposal" :
+               notesModal.action === "RULE_FAILED" ? "Reject Proposal" : "Flag for Review"}
+            </h3>
+            <p className="text-sm text-on-surface-variant font-body mb-4">
+              {notesModal.action === "APPROVED" ? "Override the screening result and approve this proposal." :
+               notesModal.action === "RULE_FAILED" ? "Confirm rejection of this proposal after manual review." :
+               "Add notes for why this proposal needs further manual review."}
+            </p>
+            <div className="mb-4">
+              <label className="block text-sm font-label font-semibold text-on-surface mb-1.5">Review Notes</label>
+              <textarea
+                value={reviewNotes}
+                onChange={(e) => setReviewNotes(e.target.value)}
+                placeholder="Add your review notes or reason for this decision..."
+                rows={3}
+                className="w-full px-4 py-2.5 rounded-xl border border-outline-variant/40 bg-surface-container-low text-sm font-body text-on-surface outline-none focus:border-primary transition-colors resize-none"
+              />
+            </div>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => { setNotesModal(null); setReviewNotes(""); }}
+                className="px-4 py-2 rounded-xl text-sm font-label font-semibold text-on-surface-variant hover:bg-surface-container transition-colors cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleAction(notesModal.id, notesModal.action)}
+                disabled={actionId === notesModal.id}
+                className={`px-4 py-2 rounded-xl text-sm font-label font-semibold text-on-primary transition-opacity disabled:opacity-50 cursor-pointer ${
+                  notesModal.action === "APPROVED" ? "bg-emerald-700" :
+                  notesModal.action === "RULE_FAILED" ? "bg-error" :
+                  "bg-amber-700"
+                }`}
+              >
+                {actionId === notesModal.id ? "Processing..." :
+                 notesModal.action === "APPROVED" ? "Approve" :
+                 notesModal.action === "RULE_FAILED" ? "Reject" : "Flag"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div>
         <h2 className="font-headline text-3xl font-bold text-primary">Rule-Based Screening Results</h2>
         <p className="text-sm text-on-surface-variant font-body">
           Initial automated verification of active grant applications against institutional compliance standards and
-          eligibility parameters.
+          eligibility parameters. Manual override available for flagged proposals.
         </p>
       </div>
 
@@ -87,7 +164,7 @@ export default function EligibilityEvaluationPage() {
           <p className="text-3xl font-headline font-extrabold text-primary mt-2">
             {loading ? "..." : stats.total}
           </p>
-          <p className="text-xs text-error mt-1 font-label">Manual action</p>
+          <p className="text-xs text-error mt-1 font-label">Requires manual action</p>
         </div>
       </div>
 
@@ -117,7 +194,7 @@ export default function EligibilityEvaluationPage() {
             )}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px]">
+            <table className="w-full min-w-[1100px]">
               <thead>
                 <tr className="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-widest font-label font-bold">
                   <th className="px-6 py-4 text-left">Proposal ID</th>
@@ -131,13 +208,13 @@ export default function EligibilityEvaluationPage() {
               <tbody className="divide-y divide-surface-container-low">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant">
+                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant font-label">
                       Loading...
                     </td>
                   </tr>
                 ) : flaggedProposals.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant">
+                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant font-label">
                       No flagged proposals found
                     </td>
                   </tr>
@@ -157,7 +234,31 @@ export default function EligibilityEvaluationPage() {
                           {getGate(row.skorRuleBased)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right text-xs font-label text-on-surface-variant">-</td>
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => openActionModal(row.id, "APPROVED")}
+                            disabled={actionId === row.id}
+                            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold font-label bg-emerald-50 text-emerald-700 hover:bg-emerald-100 transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => openActionModal(row.id, "UNDER_REVIEW")}
+                            disabled={actionId === row.id}
+                            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold font-label bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors disabled:opacity-50 cursor-pointer"
+                          >
+                            Flag
+                          </button>
+                          <button
+                            onClick={() => openActionModal(row.id, "RULE_FAILED")}
+                            disabled={actionId === row.id}
+                            className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold font-label bg-error-container text-on-error-container hover:opacity-80 transition-opacity disabled:opacity-50 cursor-pointer"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -187,7 +288,7 @@ export default function EligibilityEvaluationPage() {
               <div>
                 <h4 className="font-headline text-lg font-bold text-primary">Critical Review Required</h4>
                 <p className="text-xs text-on-surface-variant font-body mt-1">
-                  Proposals with incomplete documentation require manual verification before disbursement.
+                  Use Approve to override, Flag to escalate, or Reject to dismiss non-compliant proposals.
                 </p>
               </div>
             </div>

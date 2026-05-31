@@ -50,4 +50,9 @@ export const proposalApi = {
     const res = await api.get<ProposalResponse[]>(`/api/proposals/peneliti/${penelitiId}`);
     return res.data;
   },
+
+  updateStatus: async (id: string, status: string, catatan?: string): Promise<ProposalResponse> => {
+    const res = await api.put<ProposalResponse>(`/api/proposals/${id}/status`, { status, catatan });
+    return res.data;
+  },
 };

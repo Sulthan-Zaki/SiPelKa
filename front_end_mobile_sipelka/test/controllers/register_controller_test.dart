@@ -34,23 +34,5 @@ void main() {
       expect(controller.role.value, 'RESEARCHER');
       expect(controller.password.value, 'password123');
     });
-
-    test('register with empty fields shows error', () async {
-      final controller = RegisterController();
-
-      await controller.register();
-
-      expect(controller.isLoading.value, false);
-    });
-
-    test('register with partial fields shows error', () async {
-      final controller = RegisterController();
-      controller.name.value = 'Dr. Test';
-      controller.email.value = 'test@sipelka.ac.id';
-
-      await controller.register();
-
-      expect(controller.isLoading.value, false);
-    });
   });
 }

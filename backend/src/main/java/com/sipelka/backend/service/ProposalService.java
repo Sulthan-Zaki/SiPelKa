@@ -99,7 +99,7 @@ public class ProposalService {
     }
 
     public List<ProposalDTO> getAllProposals() {
-        return proposalRepository.findAll().stream()
+        return proposalRepository.findAllWithPenelitiAndHibah().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -114,11 +114,29 @@ public class ProposalService {
                 .collect(Collectors.toList());
     }
 
+    public ProposalStats getStats() {
+        List<Proposal> all = proposalRepository.findAllWithPenelitiAndHibah();
+        int total = all.size();
+        int active = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.UNDER_REVIEW || p.getStatusProposal() == StatusProposal.APPROVED).count();
+        int pending = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.SUBMITTED || p.getStatusProposal() == StatusProposal.DRAFT).count();
+        int ruleFailed = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.RULE_FAILED).count();
+        return new ProposalStats(total, active, pending, ruleFailed);
+    }
+
+    public List<ProposalDTO> getFlaggedProposals() {
+        return proposalRepository.findAllWithPenelitiAndHibah().stream()
+                .filter(p -> p.getStatusProposal() == StatusProposal.RULE_FAILED)
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
     private ProposalDTO toDto(Proposal proposal) {
         ProposalDTO dto = new ProposalDTO();
         dto.setId(proposal.getId());
         dto.setPenelitiId(proposal.getPeneliti().getId());
+        dto.setPenelitiName(proposal.getPeneliti().getName());
         dto.setHibahId(proposal.getHibah().getId());
+        dto.setHibahName(proposal.getHibah().getNamaProgram());
         dto.setJudulPenelitian(proposal.getJudulPenelitian());
         dto.setBidangPenelitian(proposal.getBidangPenelitian());
         dto.setRingkasan(proposal.getRingkasan());
@@ -131,4 +149,6 @@ public class ProposalService {
         dto.setUpdatedAt(proposal.getUpdatedAt());
         return dto;
     }
+
+    public record ProposalStats(int total, int active, int pending, int ruleFailed) {}
 }

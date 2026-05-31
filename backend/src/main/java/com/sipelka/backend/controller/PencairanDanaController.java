@@ -37,4 +37,9 @@ public class PencairanDanaController {
     public ResponseEntity<List<PencairanDanaDTO>> getPencairanByProposal(@PathVariable UUID proposalId) {
         return ResponseEntity.ok(pencairanDanaService.getPencairanByProposal(proposalId));
     }
+
+    @GetMapping
+    public ResponseEntity<List<PencairanDanaDTO>> getAllPencairan() {
+        return ResponseEntity.ok(pencairanDanaService.getAllPencairan());
+    }
 }

@@ -107,11 +107,6 @@ export default function Sidebar() {
 
       {/* Bottom actions */}
       <div className="mt-auto space-y-0.5">
-        <button className="w-full mb-4 gradient-primary text-on-primary py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity font-label text-sm font-semibold cursor-pointer">
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          <span>New Analysis</span>
-        </button>
-
         <Link
           href="/settings"
           className="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all font-label text-sm font-semibold"

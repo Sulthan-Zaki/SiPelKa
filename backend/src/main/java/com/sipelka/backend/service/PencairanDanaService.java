@@ -66,8 +66,14 @@ public class PencairanDanaService {
         if (!proposalRepository.existsById(proposalId)) {
             throw new ResourceNotFoundException("Proposal", "id", proposalId);
         }
-        return pencairanDanaRepository.findAll().stream()
+        return pencairanDanaRepository.findAllWithProposalAndAdmin().stream()
                 .filter(p -> p.getProposal().getId().equals(proposalId))
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<PencairanDanaDTO> getAllPencairan() {
+        return pencairanDanaRepository.findAllWithProposalAndAdmin().stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -76,6 +82,8 @@ public class PencairanDanaService {
         PencairanDanaDTO dto = new PencairanDanaDTO();
         dto.setId(pencairan.getId());
         dto.setProposalId(pencairan.getProposal().getId());
+        dto.setProposalTitle(pencairan.getProposal().getJudulPenelitian());
+        dto.setPenelitiName(pencairan.getProposal().getPeneliti().getName());
         dto.setAdminId(pencairan.getAdmin().getId());
         dto.setTahapPencairan(pencairan.getTahapPencairan());
         dto.setJumlahDana(pencairan.getJumlahDana());

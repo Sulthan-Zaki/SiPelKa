@@ -1,6 +1,6 @@
 # SiPelKa
 
-**Si**stem **I**nformasi **Pe**nelitian dan **Ka**pasitas
+**Si**stem **I**nformasi **Pe**nelitian dan Pengabdian Masyara**kat**
 
 Sistem manajemen hibah penelitian untuk mengelola program hibah, proposal, review, pencairan dana, dan logbook penelitian. Terdiri dari backend API, dashboard web, dan aplikasi mobile.
 

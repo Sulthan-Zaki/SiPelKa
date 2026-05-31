@@ -18,7 +18,8 @@ spring:
 
 app:
   jwt:
-    secret: "SiPelKaJwtSecretKeyYangSangatPanjangDanAman2026XYZ!!"
+    secret: "SiPelKaJwtSecretKeyYangSangatPanjangDanAman2026XYZ!!SuperSecureKeyForHS256Algorithm!!MustBeAtLeast256BitsLongForHS256"
     expiration-ms: 86400000 # 24 hours
   admin-token: "SIPELKA_ADMIN_SECRET_2026"
+  seed-data: ${APP_SEED_DATA:false}
 

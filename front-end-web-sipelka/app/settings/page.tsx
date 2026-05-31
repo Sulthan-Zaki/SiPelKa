@@ -1,6 +1,13 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getCurrentUser } from "@/lib/authGuard";
 
 export default function SettingsPage() {
+  const router = useRouter();
+  const user = getCurrentUser();
+
   return (
     <main className="min-h-screen bg-surface p-8 md:p-10">
       <div className="mx-auto max-w-4xl space-y-8">
@@ -26,15 +33,17 @@ export default function SettingsPage() {
             <label className="space-y-1 text-sm font-label">
               <span className="text-on-surface-variant">Display Name</span>
               <input
-                defaultValue="Dr. Sarah Wijaya"
-                className="w-full rounded-lg border border-outline-variant/30 bg-surface px-3 py-2 text-on-surface outline-none focus:ring-1 focus:ring-primary/30"
+                defaultValue={user?.name || "User"}
+                readOnly
+                className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-on-surface opacity-70 cursor-not-allowed"
               />
             </label>
             <label className="space-y-1 text-sm font-label">
               <span className="text-on-surface-variant">Email</span>
               <input
-                defaultValue="sarah.wijaya@sipelka.ac.id"
-                className="w-full rounded-lg border border-outline-variant/30 bg-surface px-3 py-2 text-on-surface outline-none focus:ring-1 focus:ring-primary/30"
+                defaultValue={user?.email || "user@sipelka.ac.id"}
+                readOnly
+                className="w-full rounded-lg border border-outline-variant/30 bg-surface-container-low px-3 py-2 text-on-surface opacity-70 cursor-not-allowed"
               />
             </label>
           </div>
@@ -60,11 +69,11 @@ export default function SettingsPage() {
         </section>
 
         <div className="flex justify-end gap-3">
-          <button className="rounded-lg border border-outline-variant/30 px-4 py-2 text-sm font-label text-on-surface">
+          <button
+            onClick={() => router.back()}
+            className="rounded-lg border border-outline-variant/30 px-4 py-2 text-sm font-label text-on-surface cursor-pointer"
+          >
             Cancel
-          </button>
-          <button className="rounded-lg gradient-primary px-4 py-2 text-sm font-label font-semibold text-on-primary">
-            Save Changes
           </button>
         </div>
       </div>

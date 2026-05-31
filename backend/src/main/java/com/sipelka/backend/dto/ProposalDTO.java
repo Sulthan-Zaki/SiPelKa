@@ -16,7 +16,9 @@ import java.util.UUID;
 public class ProposalDTO {
     private UUID id;
     private UUID penelitiId;
+    private String penelitiName;
     private UUID hibahId;
+    private String hibahName;
     private String judulPenelitian;
     private String bidangPenelitian;
     private String ringkasan;

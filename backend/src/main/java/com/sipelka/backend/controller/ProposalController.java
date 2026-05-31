@@ -48,4 +48,14 @@ public class ProposalController {
     public ResponseEntity<List<ProposalDTO>> getProposalsByPeneliti(@PathVariable UUID penelitiId) {
         return ResponseEntity.ok(proposalService.getProposalsByPeneliti(penelitiId));
     }
+
+    @GetMapping("/stats")
+    public ResponseEntity<ProposalService.ProposalStats> getStats() {
+        return ResponseEntity.ok(proposalService.getStats());
+    }
+
+    @GetMapping("/flagged")
+    public ResponseEntity<List<ProposalDTO>> getFlaggedProposals() {
+        return ResponseEntity.ok(proposalService.getFlaggedProposals());
+    }
 }

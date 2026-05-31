@@ -17,6 +17,8 @@ import java.util.UUID;
 public class PencairanDanaDTO {
     private UUID id;
     private UUID proposalId;
+    private String proposalTitle;
+    private String penelitiName;
     private UUID adminId;
     private Integer tahapPencairan;
     private BigDecimal jumlahDana;

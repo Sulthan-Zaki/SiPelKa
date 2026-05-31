@@ -15,6 +15,7 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sipelka_db
       - SPRING_DATASOURCE_USERNAME=sipelka_user
       - SPRING_DATASOURCE_PASSWORD=sipelka_secret
+      - APP_SEED_DATA=true
     depends_on:
       - postgres
 

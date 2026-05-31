@@ -13,9 +13,21 @@ export interface PencairanDanaResponse {
   buktiTransferUrl: string | null;
 }
 
+export interface PencairanStats {
+  totalCeiling: number;
+  totalDisbursed: number;
+  totalInProcess: number;
+  totalPending: number;
+}
+
 export const pencairanApi = {
   getAll: async (): Promise<PencairanDanaResponse[]> => {
     const res = await api.get<PencairanDanaResponse[]>("/api/pencairan");
+    return res.data;
+  },
+
+  getStats: async (): Promise<PencairanStats> => {
+    const res = await api.get<PencairanStats>("/api/pencairan/stats");
     return res.data;
   },
 

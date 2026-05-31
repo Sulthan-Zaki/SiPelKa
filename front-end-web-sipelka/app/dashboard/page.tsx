@@ -1,9 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { proposalApi, type ProposalStats, type ProposalResponse } from "@/lib/proposalApi";
+import { proposalApi, type ProposalStats, type ProposalResponse, type MonthlyStat } from "@/lib/proposalApi";
 import { hibahApi, type ProgramHibahResponse } from "@/lib/hibahApi";
+import { pencairanApi, type PencairanStats } from "@/lib/pencairanApi";
 import { getCurrentUser } from "@/lib/authGuard";
+
+const MONTH_LABELS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+const DONUT_COLORS = ["#6e0000", "#9a3412", "#b45309", "#0f766e", "#475569"];
+const DONUT_RADIUS = 40;
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
 
 interface MonthlyCount {
   month: string;
@@ -14,8 +20,9 @@ interface MonthlyCount {
 export default function DashboardPage() {
   const [stats, setStats] = useState<ProposalStats | null>(null);
   const [recentProposals, setRecentProposals] = useState<ProposalResponse[]>([]);
-  const [allProposals, setAllProposals] = useState<ProposalResponse[]>([]);
+  const [monthly, setMonthly] = useState<MonthlyStat[]>([]);
   const [programs, setPrograms] = useState<ProgramHibahResponse[]>([]);
+  const [pencairanStats, setPencairanStats] = useState<PencairanStats | null>(null);
   const [loading, setLoading] = useState(true);
 
   const user = getCurrentUser();
@@ -24,16 +31,19 @@ export default function DashboardPage() {
     let cancelled = false;
     const fetchData = async () => {
       try {
-        const [statsData, proposalsData, programsData] = await Promise.all([
+        const [statsData, recentData, monthlyData, programsData, pencairanData] = await Promise.all([
           proposalApi.getStats(),
-          proposalApi.getAll(),
+          proposalApi.getRecent(5),
+          proposalApi.getMonthlyStats(6),
           hibahApi.getAll().catch(() => []),
+          pencairanApi.getStats().catch(() => null),
         ]);
         if (!cancelled) {
           setStats(statsData);
-          setAllProposals(proposalsData);
-          setRecentProposals(proposalsData.slice(0, 5));
+          setRecentProposals(recentData);
+          setMonthly(monthlyData);
           setPrograms(programsData);
+          setPencairanStats(pencairanData);
         }
       } catch (err) {
         console.error("Failed to fetch dashboard data:", err);
@@ -42,35 +52,35 @@ export default function DashboardPage() {
       }
     };
     fetchData();
-    const timer = setTimeout(() => {
-      if (!cancelled) setLoading(false);
-    }, 8000);
     return () => {
       cancelled = true;
-      clearTimeout(timer);
     };
   }, []);
 
   const monthlyData: MonthlyCount[] = (() => {
-    if (allProposals.length === 0) return [];
-    const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
-    const counts: Record<string, number> = {};
-    const now = new Date();
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const key = months[d.getMonth()];
-      counts[key] = 0;
-    }
-    allProposals.forEach((p) => {
-      const d = new Date(p.createdAt);
-      const key = months[d.getMonth()];
-      if (key in counts) counts[key]++;
-    });
-    const maxCount = Math.max(...Object.values(counts), 1);
-    return Object.entries(counts).map(([month, count]) => ({ month, count, pct: Math.round((count / maxCount) * 100) }));
+    if (monthly.length === 0) return [];
+    const maxCount = Math.max(...monthly.map((m) => m.count), 1);
+    return monthly.map((m) => ({
+      month: MONTH_LABELS[m.month - 1] ?? String(m.month),
+      count: m.count,
+      pct: Math.round((m.count / maxCount) * 100),
+    }));
   })();
 
   const totalBudget = programs.reduce((sum, p) => sum + Number(p.totalDanaMaksimal), 0);
+
+  // Proportional donut segments: each program's arc length reflects its share of
+  // the total ceiling, laid out head-to-tail around the ring.
+  const donutSegments = (() => {
+    let acc = 0;
+    return programs.slice(0, 5).map((prog, i) => {
+      const frac = totalBudget > 0 ? Number(prog.totalDanaMaksimal) / totalBudget : 0;
+      const len = frac * DONUT_CIRCUMFERENCE;
+      const segment = { id: prog.id, len, offset: -acc, color: DONUT_COLORS[i % DONUT_COLORS.length] };
+      acc += len;
+      return segment;
+    });
+  })();
 
   const formatBudget = (amount: number) => {
     if (amount >= 1e12) return `Rp ${(amount / 1e12).toFixed(1)}T`;
@@ -168,13 +178,16 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-xs font-label text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
-              Total Budget Allocated
+              Funds Disbursed
             </p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-3xl font-headline font-extrabold text-primary">
-                {loading ? "..." : formatBudget(totalBudget)}
+                {loading ? "..." : formatBudget(pencairanStats?.totalDisbursed ?? 0)}
               </h3>
             </div>
+            <p className="text-[10px] text-on-surface-variant font-body">
+              of {formatBudget(totalBudget)} total ceiling
+            </p>
           </div>
         </div>
 
@@ -188,7 +201,7 @@ export default function DashboardPage() {
           </div>
           <div>
             <p className="text-xs font-label text-on-surface-variant mb-1 uppercase tracking-wider font-bold">
-              Pending Reviews
+              Pending &amp; Drafts
             </p>
             <div className="flex items-baseline gap-2">
               <h3 className="text-3xl font-headline font-extrabold text-primary">
@@ -218,7 +231,7 @@ export default function DashboardPage() {
               </div>
             ) : monthlyData.length === 0 ? (
               <div className="flex items-center justify-center h-full text-on-surface-variant text-sm font-body">
-                Belum ada data
+                No data yet
               </div>
             ) : (
               <>
@@ -250,7 +263,7 @@ export default function DashboardPage() {
             Budget Utilization
           </h4>
           <p className="text-xs text-on-surface-variant mb-8 font-body">
-            Allocation by Department
+            Share of total grant ceiling by program
           </p>
           {loading ? (
             <div className="flex-1 flex items-center justify-center text-on-surface-variant text-sm font-body">
@@ -258,14 +271,26 @@ export default function DashboardPage() {
             </div>
           ) : programs.length === 0 ? (
             <div className="flex-1 flex items-center justify-center text-on-surface-variant text-sm font-body">
-              Belum ada data
+              No data yet
             </div>
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center gap-8">
               <div className="relative w-40 h-40">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" fill="transparent" r="40" stroke="#eeeef0" strokeWidth="12" />
-                  <circle cx="50" cy="50" fill="transparent" r="40" stroke="#6e0000" strokeDasharray={`${programs.length * 25}`} strokeDashoffset="30" strokeWidth="12" />
+                  <circle cx="50" cy="50" fill="transparent" r={DONUT_RADIUS} stroke="#eeeef0" strokeWidth="12" />
+                  {donutSegments.map((seg) => (
+                    <circle
+                      key={seg.id}
+                      cx="50"
+                      cy="50"
+                      fill="transparent"
+                      r={DONUT_RADIUS}
+                      stroke={seg.color}
+                      strokeDasharray={`${seg.len} ${DONUT_CIRCUMFERENCE - seg.len}`}
+                      strokeDashoffset={seg.offset}
+                      strokeWidth="12"
+                    />
+                  ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-2xl font-headline font-bold text-primary">
@@ -280,7 +305,7 @@ export default function DashboardPage() {
                 {programs.slice(0, 5).map((prog, i) => (
                   <div key={prog.id} className="flex items-center justify-between text-xs font-label">
                     <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${i === 0 ? "bg-primary" : i === 1 ? "bg-secondary-container" : "bg-surface-container"}`}></span>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}></span>
                       <span className="text-on-surface font-medium">{prog.namaProgram}</span>
                     </div>
                     <span className="font-bold text-on-surface">

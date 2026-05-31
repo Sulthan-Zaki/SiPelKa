@@ -25,6 +25,12 @@ export interface ProposalResponse {
   updatedAt: string;
 }
 
+export interface MonthlyStat {
+  year: number;
+  month: number;
+  count: number;
+}
+
 export const proposalApi = {
   getAll: async (): Promise<ProposalResponse[]> => {
     const res = await api.get<ProposalResponse[]>("/api/proposals");
@@ -38,6 +44,16 @@ export const proposalApi = {
 
   getStats: async (): Promise<ProposalStats> => {
     const res = await api.get<ProposalStats>("/api/proposals/stats");
+    return res.data;
+  },
+
+  getMonthlyStats: async (months = 6): Promise<MonthlyStat[]> => {
+    const res = await api.get<MonthlyStat[]>(`/api/proposals/stats/monthly?months=${months}`);
+    return res.data;
+  },
+
+  getRecent: async (limit = 5): Promise<ProposalResponse[]> => {
+    const res = await api.get<ProposalResponse[]>(`/api/proposals/recent?limit=${limit}`);
     return res.data;
   },
 

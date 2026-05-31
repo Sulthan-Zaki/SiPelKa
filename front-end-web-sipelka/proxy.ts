@@ -6,7 +6,7 @@ const PROTECTED_ROUTES = ["/dashboard"];
 // List of routes that should only be accessible when NOT logged in
 const AUTH_ROUTES = ["/login", "/register"];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // Use cookies to check for token since localStorage is not available in Edge Runtime
   const token = request.cookies.get("sipelka_token")?.value;
   const { pathname } = request.nextUrl;
@@ -28,5 +28,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/register"],
+  matcher: ["/dashboard", "/dashboard/:path*", "/login", "/register"],
 };

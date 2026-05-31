@@ -44,6 +44,21 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto.Response> getUserById(@PathVariable UUID id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
+    @PostMapping
+    public ResponseEntity<UserDto.Response> createUser(@RequestBody UserDto.CreateUserRequest req) {
+        return ResponseEntity.ok(userService.createUser(req));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto.Response> updateUser(@PathVariable UUID id, @RequestBody UserDto.UpdateUserRequest req) {
+        return ResponseEntity.ok(userService.updateUser(id, req));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);

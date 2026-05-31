@@ -29,6 +29,11 @@ const NAV_ITEMS = [
     label: "Eligibility Evaluation",
     href: "/dashboard/eligibility-evaluation",
   },
+  {
+    icon: "manage_accounts",
+    label: "Manage Accounts",
+    href: "/dashboard/accounts",
+  },
 ];
 
 export default function Sidebar() {
@@ -38,6 +43,11 @@ export default function Sidebar() {
   const handleLogout = () => {
     // Clear the auth cookie
     document.cookie = "sipelka_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    // Clear localStorage
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("sipelka_token");
+      localStorage.removeItem("sipelka_user");
+    }
     // Redirect to login
     router.push("/login");
     // Force a refresh to clear any cached states

@@ -278,4 +278,65 @@ public class UserServiceTest {
         
         assertThat(userService.getAllUsers()).isEmpty();
     }
+
+    @Test
+    void shouldCreateUserSuccessfully() {
+        UserDto.CreateUserRequest req = new UserDto.CreateUserRequest();
+        req.setName("Created User");
+        req.setEmail("create@example.com");
+        req.setNip("12121212");
+        req.setPassword("password");
+        req.setRole(UserRole.REVIEWER);
+        req.setActivated(true);
+
+        UserDto.Response response = userService.createUser(req);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getName()).isEqualTo("Created User");
+        assertThat(response.getEmail()).isEqualTo("create@example.com");
+        assertThat(response.getRole()).isEqualTo(UserRole.REVIEWER);
+        assertThat(response.isActivated()).isTrue();
+    }
+
+    @Test
+    void shouldGetUserByIdSuccessfully() {
+        UserDto.UserRegistrationRequest req = new UserDto.UserRegistrationRequest();
+        req.setName("Query User");
+        req.setEmail("query@example.com");
+        req.setNip("23232323");
+        req.setPassword("password");
+        UserDto.Response created = userService.registerUser(req);
+
+        UserDto.Response response = userService.getUserById(created.getId());
+
+        assertThat(response).isNotNull();
+        assertThat(response.getId()).isEqualTo(created.getId());
+        assertThat(response.getName()).isEqualTo("Query User");
+    }
+
+    @Test
+    void shouldUpdateUserSuccessfully() {
+        UserDto.UserRegistrationRequest req = new UserDto.UserRegistrationRequest();
+        req.setName("Original User");
+        req.setEmail("original@example.com");
+        req.setNip("34343434");
+        req.setPassword("password");
+        UserDto.Response created = userService.registerUser(req);
+
+        UserDto.UpdateUserRequest updateReq = new UserDto.UpdateUserRequest();
+        updateReq.setName("Updated User");
+        updateReq.setEmail("updated@example.com");
+        updateReq.setNip("34343434"); // NIP unchanged
+        updateReq.setPassword("newpassword");
+        updateReq.setRole(UserRole.REVIEWER);
+        updateReq.setActivated(true);
+
+        UserDto.Response updated = userService.updateUser(created.getId(), updateReq);
+
+        assertThat(updated).isNotNull();
+        assertThat(updated.getName()).isEqualTo("Updated User");
+        assertThat(updated.getEmail()).isEqualTo("updated@example.com");
+        assertThat(updated.getRole()).isEqualTo(UserRole.REVIEWER);
+        assertThat(updated.isActivated()).isTrue();
+    }
 }

@@ -30,9 +30,12 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/login", "/api/users/register/admin").permitAll()
-                .requestMatchers("/api/reviews/**", "/api/notifikasi/**").hasAnyRole("ADMIN", "REVIEWER")
-                .requestMatchers("/api/proposals/**", "/api/hibah/**", "/api/pencairan/**", "/api/users/**", "/api/logbooks/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/login", "/api/users/register/admin", "/api/users/register/user").permitAll()
+                .requestMatchers("/api/notifikasi/**").hasAnyRole("ADMIN", "REVIEWER", "RESEARCHER")
+                .requestMatchers("/api/reviews/**").hasAnyRole("ADMIN", "REVIEWER")
+                .requestMatchers("/api/proposals/**", "/api/hibah/**", "/api/logbooks/**").hasAnyRole("ADMIN", "RESEARCHER")
+                .requestMatchers("/api/pencairan/**").hasRole("ADMIN")
+                .requestMatchers("/api/users/**").hasAnyRole("ADMIN", "RESEARCHER")
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
@@ -43,10 +46,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("*"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/api/**", config);

@@ -1,3 +1,11 @@
 export 'register_screen.dart';
 export 'login_screen.dart';
 export 'dashboard_screen.dart';
+export 'main_navigation.dart';
+export 'discovery_screen.dart';
+export 'profile_screen.dart';
+export 'daily_logbook_screen.dart';
+export 'proposal_submission_screen.dart';
+export 'notification_screen.dart';
+export 'account_settings_screen.dart';
+export 'research_stats_screen.dart';

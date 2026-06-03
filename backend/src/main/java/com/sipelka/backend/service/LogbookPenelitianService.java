@@ -47,6 +47,25 @@ public class LogbookPenelitianService {
                 .collect(Collectors.toList());
     }
 
+    public LogbookPenelitianDTO updateLogbook(UUID id, LogbookPenelitianDTO dto) {
+        LogbookPenelitian logbook = logbookPenelitianRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("LogbookPenelitian", "id", id));
+
+        logbook.setTanggalKegiatan(dto.getTanggalKegiatan());
+        logbook.setDeskripsiProgress(dto.getDeskripsiProgress());
+        logbook.setKendala(dto.getKendala());
+        logbook.setLampiranUrl(dto.getLampiranUrl());
+
+        return toDto(logbookPenelitianRepository.save(logbook));
+    }
+
+    public void deleteLogbook(UUID id) {
+        if (!logbookPenelitianRepository.existsById(id)) {
+            throw new ResourceNotFoundException("LogbookPenelitian", "id", id);
+        }
+        logbookPenelitianRepository.deleteById(id);
+    }
+
     private LogbookPenelitianDTO toDto(LogbookPenelitian logbook) {
         LogbookPenelitianDTO dto = new LogbookPenelitianDTO();
         dto.setId(logbook.getId());

@@ -96,11 +96,6 @@ public class UserService {
             throw new IllegalStateException("Account is not activated yet. Please wait for administrator approval.");
         }
 
-        // Only ADMIN can login to the admin dashboard
-        if (user.getRole() != UserRole.ADMIN) {
-            throw new InvalidCredentialsException("Access denied. Admin only.");
-        }
-
         String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
 
         UserDto.LoginResponse res = new UserDto.LoginResponse();
@@ -167,6 +162,18 @@ public class UserService {
 
     public void deleteUser(UUID id) {
         userRepository.deleteById(id);
+    }
+
+    public void changePassword(UUID userId, UserDto.ChangePasswordRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
     }
 
     private UserDto.Response toResponse(User user) {

@@ -2,7 +2,9 @@ package com.sipelka.backend.controller;
 
 import com.sipelka.backend.dto.UserDto;
 import com.sipelka.backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,5 +65,14 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<Void> changePassword(
+            @RequestBody UserDto.ChangePasswordRequest req,
+            Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        userService.changePassword(userId, req);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

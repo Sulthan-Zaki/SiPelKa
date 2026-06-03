@@ -19,5 +19,35 @@ class AppPages {
       page: () => const RegisterScreen(),
       binding: RegisterBinding(),
     ),
+
+    GetPage(
+      name: AppRoutes.mainNavigation,
+      page: () => const MainNavigation(),
+    ),
+
+    GetPage(
+      name: AppRoutes.dailyLogbook,
+      page: () => const DailyLogbookScreen(),
+      binding: LogbookBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.proposalSubmission,
+      page: () => const ProposalSubmissionScreen(),
+      binding: ProposalBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.notifications,
+      page: () => const NotificationScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.accountSettings,
+      page: () => const AccountSettingsScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.researchStats,
+      page: () => const ResearchStatsScreen(),
+    ),
   ];
 }

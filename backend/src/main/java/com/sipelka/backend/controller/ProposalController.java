@@ -59,11 +59,23 @@ public class ProposalController {
         return ResponseEntity.ok(proposalService.getFlaggedProposals());
     }
 
+<<<<<<< HEAD
     @PutMapping("/{id}/status")
     public ResponseEntity<ProposalDTO> updateProposalStatus(
             @PathVariable UUID id,
             @RequestBody java.util.Map<String, String> body) {
         String status = body.get("status");
         return ResponseEntity.ok(proposalService.updateStatus(id, status));
+=======
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteProposal(@PathVariable UUID id) {
+        proposalService.deleteProposal(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/stats/peneliti/{penelitiId}")
+    public ResponseEntity<ProposalService.PenelitiStats> getStatsByPeneliti(@PathVariable UUID penelitiId) {
+        return ResponseEntity.ok(proposalService.getStatsByPeneliti(penelitiId));
+>>>>>>> 24f2329 (feat: integrate mobile frontend with backend — remove hardcoded data, fix auth, add PDF upload)
     }
 }

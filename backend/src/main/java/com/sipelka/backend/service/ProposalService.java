@@ -148,6 +148,8 @@ public class ProposalService {
 
         proposal.setStatusProposal(StatusProposal.valueOf(status));
         return toDto(proposalRepository.save(proposal));
+    }
+
     public void deleteProposal(UUID id) {
         if (!proposalRepository.existsById(id)) {
             throw new ResourceNotFoundException("Proposal", "id", id);

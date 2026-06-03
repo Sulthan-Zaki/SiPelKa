@@ -3,6 +3,8 @@ import 'package:front_end_mobile_sipelka/models/grant.dart';
 import 'package:front_end_mobile_sipelka/services/grant_service.dart';
 import 'package:front_end_mobile_sipelka/services/proposal_service.dart';
 import 'package:front_end_mobile_sipelka/services/api_service.dart';
+import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
+import 'package:front_end_mobile_sipelka/models/storage_key.dart';
 
 class ProposalController extends GetxController {
   final grants = <Grant>[].obs;
@@ -52,7 +54,14 @@ class ProposalController extends GetxController {
         dokumenUrl = uploadResponse.data['url'] as String?;
       }
 
+      final userData = await LocalStorageService.read(StorageKey.user);
+      final penelitiId = userData is Map ? userData['id'] as String? : null;
+      if (penelitiId == null) {
+        throw Exception('User not found in local storage');
+      }
+
       final proposal = await ProposalService().createProposal({
+        'penelitiId': penelitiId,
         'hibahId': selectedGrant.value!.id,
         'judulPenelitian': title,
         'ringkasan': abstrak,

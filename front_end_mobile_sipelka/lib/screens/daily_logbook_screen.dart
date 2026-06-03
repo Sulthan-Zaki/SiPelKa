@@ -188,10 +188,11 @@ class DailyLogbookScreen extends StatelessWidget {
                       Get.snackbar('Error', 'Please select a proposal');
                       return;
                     }
+                    final formattedDate =
+                        '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}';
                     controller.addLogbook({
                       'proposalId': selectedProposalId,
-                      'tanggalKegiatan':
-                          selectedDate.toIso8601String(),
+                      'tanggalKegiatan': formattedDate,
                       'deskripsiProgress': descController.text,
                       'kendala': kendalaController.text.isEmpty
                           ? null

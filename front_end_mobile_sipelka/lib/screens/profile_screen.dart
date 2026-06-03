@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/services/api_service.dart';
 import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/controllers/profile_controller.dart';
+import 'package:front_end_mobile_sipelka/routes/app_route.dart';
 import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -72,32 +73,48 @@ class ProfileScreen extends StatelessWidget {
               context,
               'Account Settings',
               Icons.settings_outlined,
-              () {},
+              () => Get.toNamed(AppRoutes.accountSettings),
             ),
             _buildProfileMenu(
               context,
               'Research Stats',
               Icons.bar_chart_outlined,
-              () {},
-            ),
-            _buildProfileMenu(
-              context,
-              'My Certificates',
-              Icons.workspace_premium_outlined,
-              () {},
+              () => Get.toNamed(AppRoutes.researchStats),
             ),
             _buildProfileMenu(
               context,
               'Notifications',
               Icons.notifications_outlined,
-              () {},
+              () => Get.toNamed(AppRoutes.notifications),
             ),
             const Divider(height: 40, indent: 24, endIndent: 24),
             _buildProfileMenu(
               context,
               'Help & Support',
               Icons.help_outline,
-              () {},
+              () => showDialog(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Help & Support'),
+                  content: const Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('For assistance, contact:'),
+                      SizedBox(height: 12),
+                      Text('Email: support@sipelka.ac.id'),
+                      SizedBox(height: 4),
+                      Text('Phone: (0274) 123-4567'),
+                    ],
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
+              ),
             ),
             _buildProfileMenu(
               context,

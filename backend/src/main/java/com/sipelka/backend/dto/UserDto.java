@@ -72,5 +72,11 @@ public class UserDto {
         private String token;
         private Response user;
     }
+
+    @Data
+    public static class ChangePasswordRequest {
+        private String currentPassword;
+        private String newPassword;
+    }
 }
 

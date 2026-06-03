@@ -41,5 +41,13 @@ class AppPages {
       name: AppRoutes.notifications,
       page: () => const NotificationScreen(),
     ),
+    GetPage(
+      name: AppRoutes.accountSettings,
+      page: () => const AccountSettingsScreen(),
+    ),
+    GetPage(
+      name: AppRoutes.researchStats,
+      page: () => const ResearchStatsScreen(),
+    ),
   ];
 }

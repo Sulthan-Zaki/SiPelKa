@@ -164,6 +164,18 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public void changePassword(UUID userId, UserDto.ChangePasswordRequest req) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!passwordEncoder.matches(req.getCurrentPassword(), user.getPassword())) {
+            throw new InvalidCredentialsException("Current password is incorrect");
+        }
+
+        user.setPassword(passwordEncoder.encode(req.getNewPassword()));
+        userRepository.save(user);
+    }
+
     private UserDto.Response toResponse(User user) {
         UserDto.Response res = new UserDto.Response();
         res.setId(user.getId());

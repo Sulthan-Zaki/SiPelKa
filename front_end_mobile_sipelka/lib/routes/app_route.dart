@@ -8,4 +8,6 @@ abstract class AppRoutes {
   static const notifications = '/notifications';
   static const discovery = '/discovery';
   static const profile = '/profile';
+  static const accountSettings = '/account-settings';
+  static const researchStats = '/research-stats';
 }

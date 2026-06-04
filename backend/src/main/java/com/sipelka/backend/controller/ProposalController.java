@@ -65,6 +65,7 @@ public class ProposalController {
             @RequestBody java.util.Map<String, String> body) {
         String status = body.get("status");
         return ResponseEntity.ok(proposalService.updateStatus(id, status));
+    }
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProposal(@PathVariable UUID id) {
         proposalService.deleteProposal(id);

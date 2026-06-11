@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { pencairanApi, type PencairanDanaResponse } from "@/lib/pencairanApi";
+import { pencairanApi, type PencairanDanaResponse, type CreatePencairanPayload } from "@/lib/pencairanApi";
 import { useToast } from "@/components/Toast";
+import DisbursementForm from "@/components/DisbursementForm";
+import { proposalApi, type ProposalResponse } from "@/lib/proposalApi";
+import { getCurrentUser } from "@/lib/authGuard";
 
 const STATUS_OPTIONS: { value: PencairanDanaResponse["statusPencairan"]; label: string }[] = [
   { value: "PENDING", label: "Pending" },
@@ -17,6 +20,8 @@ export default function DisbursementStatusPage() {
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [buktiModal, setBuktiModal] = useState<{ id: string; status: string } | null>(null);
   const [buktiUrl, setBuktiUrl] = useState("");
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [approvedProposals, setApprovedProposals] = useState<ProposalResponse[]>([]);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -35,6 +40,18 @@ export default function DisbursementStatusPage() {
     fetchData();
   }, [fetchData]);
 
+  useEffect(() => {
+    const fetchApprovedProposals = async () => {
+      try {
+        const allProposals = await proposalApi.getAll();
+        setApprovedProposals(allProposals.filter((p) => p.statusProposal === "APPROVED"));
+      } catch (err) {
+        console.error("Failed to fetch approved proposals:", err);
+      }
+    };
+    fetchApprovedProposals();
+  }, []);
+
   const handleStatusChange = async (id: string, newStatus: string) => {
     if (newStatus === "CAIR") {
       setBuktiModal({ id, status: newStatus });
@@ -49,6 +66,24 @@ export default function DisbursementStatusPage() {
     await updateStatus(buktiModal.id, buktiModal.status, buktiUrl.trim() || undefined);
     setBuktiModal(null);
     setBuktiUrl("");
+  };
+
+  const handleCreateSubmit = async (payload: CreatePencairanPayload) => {
+    try {
+      const user = getCurrentUser();
+      if (!user) {
+        toast("User not authenticated", "error");
+        return;
+      }
+      await pencairanApi.create({ ...payload, adminId: user.id });
+      toast("Disbursement created successfully", "success");
+      setCreateModalOpen(false);
+      await fetchData();
+    } catch (err) {
+      console.error("Failed to create disbursement:", err);
+      toast("Failed to create disbursement", "error");
+      throw err;
+    }
   };
 
   const updateStatus = async (id: string, status: string, buktiTransferUrl?: string) => {
@@ -134,14 +169,30 @@ export default function DisbursementStatusPage() {
         </div>
       )}
 
-      <div>
-        <h2 className="font-headline text-3xl font-bold text-primary">
-          Disbursement Status Tracker
-        </h2>
-        <p className="text-sm text-on-surface-variant font-body">
-          Financial oversight and release tracking for the current fiscal cycle.
-          Monitor institutional research grants and fund allocation.
-        </p>
+      <DisbursementForm
+        open={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSave={handleCreateSubmit}
+        approvedProposals={approvedProposals}
+      />
+
+      <div className="flex items-start justify-between">
+        <div>
+          <h2 className="font-headline text-3xl font-bold text-primary">
+            Disbursement Status Tracker
+          </h2>
+          <p className="text-sm text-on-surface-variant font-body">
+            Financial oversight and release tracking for the current fiscal cycle.
+            Monitor institutional research grants and fund allocation.
+          </p>
+        </div>
+        <button
+          onClick={() => setCreateModalOpen(true)}
+          className="px-5 py-2.5 rounded-xl text-sm font-label font-semibold text-on-primary gradient-primary hover:opacity-90 transition-opacity cursor-pointer flex items-center gap-2"
+        >
+          <span className="material-symbols-outlined text-[18px]">add</span>
+          Create Disbursement
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

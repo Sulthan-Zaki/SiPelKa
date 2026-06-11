@@ -17,6 +17,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -121,8 +122,9 @@ public class ProposalService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public ProposalDTO updateStatus(UUID id, String status) {
-        Proposal proposal = proposalRepository.findById(id)
+        Proposal proposal = proposalRepository.findByIdWithPenelitiAndHibah(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
 
         proposal.setStatusProposal(StatusProposal.valueOf(status));

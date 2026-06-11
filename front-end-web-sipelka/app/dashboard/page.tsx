@@ -97,8 +97,6 @@ export default function DashboardPage() {
         return "bg-secondary-container text-on-secondary-container";
       case "APPROVED":
         return "bg-emerald-50 text-emerald-700";
-      case "RULE_FAILED":
-        return "bg-error-container text-on-error-container";
       default:
         return "bg-surface-container text-on-surface-variant";
     }
@@ -110,8 +108,6 @@ export default function DashboardPage() {
         return "Review";
       case "APPROVED":
         return "Approved";
-      case "RULE_FAILED":
-        return "Flagged";
       default:
         return status;
     }
@@ -125,6 +121,28 @@ export default function DashboardPage() {
       .join("")
       .toUpperCase();
   };
+
+  const DONUT_COLORS = ["#6e0000", "#c41e3a", "#e57373", "#ffab91", "#ffccbc"];
+  const DONUT_RADIUS = 40;
+  const DONUT_CIRCUMFERENCE = 2 * Math.PI * DONUT_RADIUS;
+
+  const donutSegments = (() => {
+    if (programs.length === 0 || totalBudget === 0) return [];
+    let cumulativeOffset = 0;
+    return programs.slice(0, 5).map((prog) => {
+      const proportion = Number(prog.totalDanaMaksimal) / totalBudget;
+      const segmentLength = proportion * DONUT_CIRCUMFERENCE;
+      const offset = cumulativeOffset;
+      cumulativeOffset += segmentLength;
+      return {
+        id: prog.id,
+        name: prog.namaProgram,
+        proportion,
+        segmentLength,
+        offset,
+      };
+    });
+  })();
 
   return (
     <>
@@ -226,7 +244,7 @@ export default function DashboardPage() {
                   {monthlyData.map((item) => (
                     <div
                       key={item.month}
-                      className="w-full bg-surface-container-low rounded-t relative group"
+                      className="w-full h-full bg-surface-container-low rounded-t relative group"
                     >
                       <div
                         className="absolute bottom-0 w-full gradient-primary rounded-t-lg transition-all duration-300 group-hover:opacity-80"
@@ -264,8 +282,20 @@ export default function DashboardPage() {
             <div className="flex-1 flex flex-col items-center justify-center gap-8">
               <div className="relative w-40 h-40">
                 <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" fill="transparent" r="40" stroke="#eeeef0" strokeWidth="12" />
-                  <circle cx="50" cy="50" fill="transparent" r="40" stroke="#6e0000" strokeDasharray={`${programs.length * 25}`} strokeDashoffset="30" strokeWidth="12" />
+                  <circle cx="50" cy="50" fill="transparent" r={DONUT_RADIUS} stroke="#eeeef0" strokeWidth="12" />
+                  {donutSegments.map((seg, i) => (
+                    <circle
+                      key={seg.id}
+                      cx="50"
+                      cy="50"
+                      fill="transparent"
+                      r={DONUT_RADIUS}
+                      stroke={DONUT_COLORS[i % DONUT_COLORS.length]}
+                      strokeWidth="12"
+                      strokeDasharray={`${seg.segmentLength} ${DONUT_CIRCUMFERENCE - seg.segmentLength}`}
+                      strokeDashoffset={-seg.offset}
+                    />
+                  ))}
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-2xl font-headline font-bold text-primary">
@@ -280,7 +310,7 @@ export default function DashboardPage() {
                 {programs.slice(0, 5).map((prog, i) => (
                   <div key={prog.id} className="flex items-center justify-between text-xs font-label">
                     <div className="flex items-center gap-2">
-                      <span className={`w-2.5 h-2.5 rounded-full ${i === 0 ? "bg-primary" : i === 1 ? "bg-secondary-container" : "bg-surface-container"}`}></span>
+                      <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: DONUT_COLORS[i % DONUT_COLORS.length] }}></span>
                       <span className="text-on-surface font-medium">{prog.namaProgram}</span>
                     </div>
                     <span className="font-bold text-on-surface">

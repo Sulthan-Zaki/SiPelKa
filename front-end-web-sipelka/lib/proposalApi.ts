@@ -4,7 +4,6 @@ export interface ProposalStats {
   total: number;
   active: number;
   pending: number;
-  ruleFailed: number;
 }
 
 export interface ProposalResponse {

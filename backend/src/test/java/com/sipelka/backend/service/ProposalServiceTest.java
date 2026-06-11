@@ -75,27 +75,18 @@ public class ProposalServiceTest {
 
     @Test
     void shouldCreateProposalWithDraftStatus() {
-        ProposalDTO dto = buildProposalDto(penelitiId, hibahId, true, true);
+        ProposalDTO dto = buildProposalDto(penelitiId, hibahId);
         ProposalDTO result = proposalService.createProposal(dto);
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getStatusProposal()).isEqualTo(StatusProposal.DRAFT);
+        assertThat(result.getSkorRuleBased()).isEqualTo(0);
         assertThat(proposalRepository.count()).isEqualTo(1);
     }
 
     @Test
-    void shouldSetDefaultFalseForCriteriaWhenNull() {
-        ProposalDTO dto = buildProposalDto(penelitiId, hibahId, null, null);
-        ProposalDTO result = proposalService.createProposal(dto);
-
-        assertThat(result.getKriteriaKelengkapanDokumen()).isFalse();
-        assertThat(result.getKesesuaianBidang()).isFalse();
-        assertThat(result.getSkorRuleBased()).isEqualTo(0);
-    }
-
-    @Test
     void shouldThrowWhenCreatingProposalWithNonExistentPeneliti() {
-        ProposalDTO dto = buildProposalDto(UUID.randomUUID(), hibahId, true, true);
+        ProposalDTO dto = buildProposalDto(UUID.randomUUID(), hibahId);
         assertThatThrownBy(() -> proposalService.createProposal(dto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("User");
@@ -103,7 +94,7 @@ public class ProposalServiceTest {
 
     @Test
     void shouldThrowWhenCreatingProposalWithNonExistentHibah() {
-        ProposalDTO dto = buildProposalDto(penelitiId, UUID.randomUUID(), true, true);
+        ProposalDTO dto = buildProposalDto(penelitiId, UUID.randomUUID());
         assertThatThrownBy(() -> proposalService.createProposal(dto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("ProgramHibah");
@@ -113,9 +104,9 @@ public class ProposalServiceTest {
 
     @Test
     void shouldUpdateProposalJudulSuccessfully() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, true));
+        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
 
-        ProposalDTO updateDto = buildProposalDto(penelitiId, hibahId, true, true);
+        ProposalDTO updateDto = buildProposalDto(penelitiId, hibahId);
         updateDto.setJudulPenelitian("Judul Baru");
         ProposalDTO updated = proposalService.updateProposal(created.getId(), updateDto);
 
@@ -123,20 +114,8 @@ public class ProposalServiceTest {
     }
 
     @Test
-    void shouldUpdateCriteriaPartially() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, false, false));
-
-        ProposalDTO updateDto = buildProposalDto(penelitiId, hibahId, true, null);
-        ProposalDTO updated = proposalService.updateProposal(created.getId(), updateDto);
-
-        // kriteria updated, kesesuaian stays false (null means no-update)
-        assertThat(updated.getKriteriaKelengkapanDokumen()).isTrue();
-        assertThat(updated.getKesesuaianBidang()).isFalse();
-    }
-
-    @Test
     void shouldThrowWhenUpdatingNonExistentProposal() {
-        ProposalDTO dto = buildProposalDto(penelitiId, hibahId, true, true);
+        ProposalDTO dto = buildProposalDto(penelitiId, hibahId);
         assertThatThrownBy(() -> proposalService.updateProposal(UUID.randomUUID(), dto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Proposal");
@@ -145,39 +124,46 @@ public class ProposalServiceTest {
     // ==================== submitProposal (Rule-Based Engine) ====================
 
     @Test
-    void shouldSetStatusUnderReviewWhenBothCriteriaTrue() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, true));
+    void shouldAlwaysSetStatusUnderReviewOnSubmit() {
+        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
         ProposalDTO submitted = proposalService.submitProposal(created.getId());
 
         assertThat(submitted.getStatusProposal()).isEqualTo(StatusProposal.UNDER_REVIEW);
+    }
+
+    @Test
+    void shouldCalculateScoreOnSubmit() {
+        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        ProposalDTO submitted = proposalService.submitProposal(created.getId());
+
+        assertThat(submitted.getSkorRuleBased()).isNotNull();
+        assertThat(submitted.getSkorRuleBased()).isGreaterThanOrEqualTo(0);
+        assertThat(submitted.getSkorRuleBased()).isLessThanOrEqualTo(100);
+    }
+
+    @Test
+    void shouldGiveFullScoreForCompleteProposal() {
+        ProposalDTO dto = buildProposalDto(penelitiId, hibahId);
+        dto.setJudulPenelitian("Judul Penelitian yang Cukup Panjang");
+        dto.setRingkasan("Ringkasan penelitian yang cukup panjang untuk memenuhi kriteria minimum seratus karakter. Ini adalah ringkasan yang lengkap dan detail.");
+        dto.setDokumenUrl("https://storage.test/doc.pdf");
+        ProposalDTO created = proposalService.createProposal(dto);
+        ProposalDTO submitted = proposalService.submitProposal(created.getId());
+
         assertThat(submitted.getSkorRuleBased()).isEqualTo(100);
     }
 
     @Test
-    void shouldSetStatusRuleFailedWhenKriteriaFalse() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, false, true));
+    void shouldGivePartialScoreForShortJudul() {
+        ProposalDTO dto = buildProposalDto(penelitiId, hibahId);
+        dto.setJudulPenelitian("Pendek");
+        dto.setRingkasan("Ringkasan pendek");
+        dto.setDokumenUrl("https://storage.test/doc.pdf");
+        ProposalDTO created = proposalService.createProposal(dto);
         ProposalDTO submitted = proposalService.submitProposal(created.getId());
 
-        assertThat(submitted.getStatusProposal()).isEqualTo(StatusProposal.RULE_FAILED);
-        assertThat(submitted.getSkorRuleBased()).isEqualTo(50);
-    }
-
-    @Test
-    void shouldSetStatusRuleFailedWhenKesesuaianFalse() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, false));
-        ProposalDTO submitted = proposalService.submitProposal(created.getId());
-
-        assertThat(submitted.getStatusProposal()).isEqualTo(StatusProposal.RULE_FAILED);
-        assertThat(submitted.getSkorRuleBased()).isEqualTo(50);
-    }
-
-    @Test
-    void shouldSetStatusRuleFailedWhenBothCriteriaFalse() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, false, false));
-        ProposalDTO submitted = proposalService.submitProposal(created.getId());
-
-        assertThat(submitted.getStatusProposal()).isEqualTo(StatusProposal.RULE_FAILED);
-        assertThat(submitted.getSkorRuleBased()).isEqualTo(0);
+        assertThat(submitted.getSkorRuleBased()).isLessThan(100);
+        assertThat(submitted.getStatusProposal()).isEqualTo(StatusProposal.UNDER_REVIEW);
     }
 
     @Test
@@ -191,7 +177,7 @@ public class ProposalServiceTest {
 
     @Test
     void shouldGetProposalByIdSuccessfully() {
-        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, true));
+        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
         ProposalDTO found = proposalService.getProposalById(created.getId());
 
         assertThat(found.getJudulPenelitian()).isEqualTo("Judul Penelitian Test");
@@ -208,8 +194,8 @@ public class ProposalServiceTest {
 
     @Test
     void shouldReturnAllProposals() {
-        proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, true));
-        proposalService.createProposal(buildProposalDto(penelitiId, hibahId, false, false));
+        proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
 
         List<ProposalDTO> all = proposalService.getAllProposals();
         assertThat(all).hasSize(2);
@@ -224,14 +210,13 @@ public class ProposalServiceTest {
 
     @Test
     void shouldGetProposalsBySpecificPeneliti() {
-        // Another peneliti
         UserDto.UserRegistrationRequest req2 = new UserDto.UserRegistrationRequest();
         req2.setName("Peneliti 2"); req2.setEmail("p2@test.com");
         req2.setNip("PNL002"); req2.setPassword("pass");
         UUID peneliti2Id = userService.activateUser(userService.registerUser(req2).getId()).getId();
 
-        proposalService.createProposal(buildProposalDto(penelitiId, hibahId, true, true));
-        proposalService.createProposal(buildProposalDto(peneliti2Id, hibahId, true, true));
+        proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        proposalService.createProposal(buildProposalDto(peneliti2Id, hibahId));
 
         List<ProposalDTO> result = proposalService.getProposalsByPeneliti(penelitiId);
         assertThat(result).hasSize(1);
@@ -245,10 +230,43 @@ public class ProposalServiceTest {
                 .hasMessageContaining("User");
     }
 
+    // ==================== getFlaggedProposals ====================
+
+    @Test
+    void shouldReturnUnderReviewProposalsAsFlagged() {
+        ProposalDTO created = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        proposalService.submitProposal(created.getId());
+
+        List<ProposalDTO> flagged = proposalService.getFlaggedProposals();
+        assertThat(flagged).hasSize(1);
+        assertThat(flagged.get(0).getStatusProposal()).isEqualTo(StatusProposal.UNDER_REVIEW);
+    }
+
+    @Test
+    void shouldNotReturnDraftProposalsAsFlagged() {
+        proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+
+        List<ProposalDTO> flagged = proposalService.getFlaggedProposals();
+        assertThat(flagged).isEmpty();
+    }
+
+    // ==================== getStats ====================
+
+    @Test
+    void shouldReturnCorrectStats() {
+        ProposalDTO p1 = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        ProposalDTO p2 = proposalService.createProposal(buildProposalDto(penelitiId, hibahId));
+        proposalService.submitProposal(p1.getId());
+
+        ProposalService.ProposalStats stats = proposalService.getStats();
+        assertThat(stats.total()).isEqualTo(2);
+        assertThat(stats.active()).isEqualTo(1);
+        assertThat(stats.pending()).isEqualTo(1);
+    }
+
     // ==================== helper ====================
 
-    private ProposalDTO buildProposalDto(UUID penelitiId, UUID hibahId,
-                                         Boolean kriteria, Boolean kesesuaian) {
+    private ProposalDTO buildProposalDto(UUID penelitiId, UUID hibahId) {
         ProposalDTO dto = new ProposalDTO();
         dto.setPenelitiId(penelitiId);
         dto.setHibahId(hibahId);
@@ -256,8 +274,6 @@ public class ProposalServiceTest {
         dto.setBidangPenelitian("Informatika");
         dto.setRingkasan("Ringkasan penelitian");
         dto.setDokumenUrl("https://storage.test/doc.pdf");
-        dto.setKriteriaKelengkapanDokumen(kriteria);
-        dto.setKesesuaianBidang(kesesuaian);
         return dto;
     }
 }

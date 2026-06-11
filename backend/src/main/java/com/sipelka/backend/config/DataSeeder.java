@@ -166,9 +166,7 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Penelitian ini bertujuan mengembangkan model machine learning yang mampu mendeteksi dini penyakit tropis menggunakan data citra medis dan gejala klinis.")
                 .dokumenUrl("/uploads/proposals/ml-tropis.pdf")
                 .statusProposal(StatusProposal.APPROVED)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
-                .skorRuleBased(85)
+                .skorRuleBased(100)
                 .build();
 
         Proposal proposal2 = Proposal.builder()
@@ -179,9 +177,7 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Program pemberdayaan ekonomi perempuan pedesaan melalui pelatihan digitalisasi UMKM dan pendampingan bisnis berkelanjutan.")
                 .dokumenUrl("/uploads/proposals/ekonomi-perempuan.pdf")
                 .statusProposal(StatusProposal.UNDER_REVIEW)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
-                .skorRuleBased(75)
+                .skorRuleBased(85)
                 .build();
 
         Proposal proposal3 = Proposal.builder()
@@ -192,8 +188,6 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Penelitian ini fokus pada pengembangan material nano berbasis karbon untuk aplikasi penyimpanan energi yang lebih efisien dan ramah lingkungan.")
                 .dokumenUrl("/uploads/proposals/material-nano.pdf")
                 .statusProposal(StatusProposal.DRAFT)
-                .kriteriaKelengkapanDokumen(false)
-                .kesesuaianBidang(true)
                 .skorRuleBased(null)
                 .build();
 
@@ -205,8 +199,6 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Mengembangkan platform pembelajaran matematika interaktif berbasis augmented reality dan gamifikasi untuk meningkatkan minat belajar siswa SD.")
                 .dokumenUrl("/uploads/proposals/gamifikasi-matematika.pdf")
                 .statusProposal(StatusProposal.SUBMITTED)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
                 .skorRuleBased(70)
                 .build();
 
@@ -218,8 +210,6 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Mengembangkan sistem pertanian cerdas menggunakan sensor IoT, drone, dan analitik data untuk mengoptimalkan produksi padi dan efisiensi sumber daya.")
                 .dokumenUrl("/uploads/proposals/smart-farming.pdf")
                 .statusProposal(StatusProposal.UNDER_REVIEW)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
                 .skorRuleBased(80)
                 .build();
 
@@ -231,9 +221,7 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Program pemberdayaan petani muda dengan pelatihan teknologi pertanian presisi, akses pasar digital, dan pendampingan agribisnis berkelanjutan.")
                 .dokumenUrl("/uploads/proposals/petani-milenial.pdf")
                 .statusProposal(StatusProposal.APPROVED)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
-                .skorRuleBased(88)
+                .skorRuleBased(100)
                 .build();
 
         Proposal proposal7 = Proposal.builder()
@@ -244,9 +232,7 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Membangun platform pembelajaran bahasa Inggris adaptif berbasis kecerdasan buatan yang menyesuaikan materi dengan kemampuan individu peserta didik.")
                 .dokumenUrl("/uploads/proposals/ai-pembelajaran.pdf")
                 .statusProposal(StatusProposal.REJECTED)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(false)
-                .skorRuleBased(45)
+                .skorRuleBased(65)
                 .build();
 
         Proposal proposal8 = Proposal.builder()
@@ -257,8 +243,6 @@ public class DataSeeder implements CommandLineRunner {
                 .ringkasan("Merancang sistem irigasi otomatis bertenaga surya yang dikendalikan melalui aplikasi mobile untuk meningkatkan produktivitas lahan pertanian lahan kering.")
                 .dokumenUrl("/uploads/proposals/irigasi-cerdas.pdf")
                 .statusProposal(StatusProposal.SUBMITTED)
-                .kriteriaKelengkapanDokumen(true)
-                .kesesuaianBidang(true)
                 .skorRuleBased(72)
                 .build();
         proposalRepository.save(proposal1);

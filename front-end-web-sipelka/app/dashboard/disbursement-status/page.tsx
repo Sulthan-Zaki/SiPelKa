@@ -198,11 +198,12 @@ export default function DisbursementStatusPage() {
             ))}
           </div>
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1000px]">
+            <table className="w-full min-w-[1100px]">
               <thead>
                 <tr className="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-widest font-label font-bold">
                   <th className="px-6 py-4 text-left">Grant ID</th>
-                  <th className="px-6 py-4 text-left">Investigator</th>
+                  <th className="px-6 py-4 text-center">Stage</th>
+                  <th className="px-6 py-4 text-left">Researcher</th>
                   <th className="px-6 py-4 text-left">Research Title</th>
                   <th className="px-6 py-4 text-right">Amount</th>
                   <th className="px-6 py-4 text-center">Status</th>
@@ -212,13 +213,13 @@ export default function DisbursementStatusPage() {
               <tbody className="divide-y divide-surface-container-low">
                 {loading ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant font-label">
+                    <td colSpan={7} className="px-6 py-12 text-center text-on-surface-variant font-label">
                       Loading...
                     </td>
                   </tr>
                 ) : disbursements.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-on-surface-variant font-label">
+                    <td colSpan={7} className="px-6 py-12 text-center text-on-surface-variant font-label">
                       No disbursement records found
                     </td>
                   </tr>
@@ -227,6 +228,11 @@ export default function DisbursementStatusPage() {
                     <tr key={row.id} className="hover:bg-surface-container-low/60">
                       <td className="px-6 py-4 font-label text-sm text-primary font-bold">
                         #{row.id.slice(-8).toUpperCase()}
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold font-label bg-surface-container text-on-surface-variant whitespace-nowrap">
+                          Tahap {row.tahapPencairan}
+                        </span>
                       </td>
                       <td className="px-6 py-4 text-sm text-on-surface font-body">
                         {row.penelitiName}
@@ -239,7 +245,7 @@ export default function DisbursementStatusPage() {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <span
-                          className={`px-3 py-1 rounded-full text-[10px] font-bold font-label ${getStatusStyle(row.statusPencairan)}`}
+                          className={`px-3 py-1 rounded-full text-[10px] font-bold font-label whitespace-nowrap ${getStatusStyle(row.statusPencairan)}`}
                         >
                           {row.statusPencairan === "CAIR" ? "Disbursed" :
                            row.statusPencairan === "PROSES" ? "In Process" : "Pending"}

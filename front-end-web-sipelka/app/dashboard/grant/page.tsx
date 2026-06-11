@@ -109,8 +109,6 @@ export default function GrantDashboardPage() {
         return "bg-secondary-container text-on-secondary-container";
       case "APPROVED":
         return "bg-emerald-50 text-emerald-700";
-      case "RULE_FAILED":
-        return "bg-amber-50 text-amber-700";
       case "SUBMITTED":
         return "bg-surface-container text-on-surface-variant";
       default:
@@ -124,8 +122,6 @@ export default function GrantDashboardPage() {
         return "Review";
       case "APPROVED":
         return "Approved";
-      case "RULE_FAILED":
-        return "Flagged";
       case "SUBMITTED":
         return "Pending";
       case "DRAFT":

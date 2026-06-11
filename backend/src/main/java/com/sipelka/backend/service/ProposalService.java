@@ -32,12 +32,14 @@ public class ProposalService {
     private final UserRepository userRepository;
     private final ProgramHibahRepository programHibahRepository;
     private final LogbookPenelitianRepository logbookPenelitianRepository;
+    private final RuleBasedScreeningService ruleBasedScreeningService;
 
-    public ProposalService(ProposalRepository proposalRepository, UserRepository userRepository, ProgramHibahRepository programHibahRepository, LogbookPenelitianRepository logbookPenelitianRepository) {
+    public ProposalService(ProposalRepository proposalRepository, UserRepository userRepository, ProgramHibahRepository programHibahRepository, LogbookPenelitianRepository logbookPenelitianRepository, RuleBasedScreeningService ruleBasedScreeningService) {
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
         this.programHibahRepository = programHibahRepository;
         this.logbookPenelitianRepository = logbookPenelitianRepository;
+        this.ruleBasedScreeningService = ruleBasedScreeningService;
     }
 
     public ProposalDTO createProposal(ProposalDTO dto) {
@@ -54,8 +56,6 @@ public class ProposalService {
         proposal.setRingkasan(dto.getRingkasan());
         proposal.setDokumenUrl(dto.getDokumenUrl());
         proposal.setStatusProposal(StatusProposal.DRAFT);
-        proposal.setKriteriaKelengkapanDokumen(dto.getKriteriaKelengkapanDokumen() != null ? dto.getKriteriaKelengkapanDokumen() : false);
-        proposal.setKesesuaianBidang(dto.getKesesuaianBidang() != null ? dto.getKesesuaianBidang() : false);
         proposal.setSkorRuleBased(0);
 
         return toDto(proposalRepository.save(proposal));
@@ -70,13 +70,6 @@ public class ProposalService {
         proposal.setRingkasan(dto.getRingkasan());
         proposal.setDokumenUrl(dto.getDokumenUrl());
 
-        if (dto.getKriteriaKelengkapanDokumen() != null) {
-            proposal.setKriteriaKelengkapanDokumen(dto.getKriteriaKelengkapanDokumen());
-        }
-        if (dto.getKesesuaianBidang() != null) {
-            proposal.setKesesuaianBidang(dto.getKesesuaianBidang());
-        }
-
         return toDto(proposalRepository.save(proposal));
     }
 
@@ -84,22 +77,9 @@ public class ProposalService {
         Proposal proposal = proposalRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
 
-        // Basic Rule-Based Engine
-        int skor = 0;
-        if (Boolean.TRUE.equals(proposal.getKriteriaKelengkapanDokumen())) {
-            skor += 50;
-        }
-        if (Boolean.TRUE.equals(proposal.getKesesuaianBidang())) {
-            skor += 50;
-        }
-
+        int skor = ruleBasedScreeningService.calculateScore(proposal);
         proposal.setSkorRuleBased(skor);
-
-        if (skor >= 100) {
-            proposal.setStatusProposal(StatusProposal.UNDER_REVIEW);
-        } else {
-            proposal.setStatusProposal(StatusProposal.RULE_FAILED);
-        }
+        proposal.setStatusProposal(StatusProposal.UNDER_REVIEW);
 
         return toDto(proposalRepository.save(proposal));
     }
@@ -131,13 +111,12 @@ public class ProposalService {
         int total = all.size();
         int active = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.UNDER_REVIEW || p.getStatusProposal() == StatusProposal.APPROVED).count();
         int pending = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.SUBMITTED || p.getStatusProposal() == StatusProposal.DRAFT).count();
-        int ruleFailed = (int) all.stream().filter(p -> p.getStatusProposal() == StatusProposal.RULE_FAILED).count();
-        return new ProposalStats(total, active, pending, ruleFailed);
+        return new ProposalStats(total, active, pending);
     }
 
     public List<ProposalDTO> getFlaggedProposals() {
         return proposalRepository.findAllWithPenelitiAndHibah().stream()
-                .filter(p -> p.getStatusProposal() == StatusProposal.RULE_FAILED)
+                .filter(p -> p.getStatusProposal() == StatusProposal.UNDER_REVIEW)
                 .map(this::toDto)
                 .collect(Collectors.toList());
     }
@@ -226,8 +205,6 @@ public class ProposalService {
         dto.setRingkasan(proposal.getRingkasan());
         dto.setDokumenUrl(proposal.getDokumenUrl());
         dto.setStatusProposal(proposal.getStatusProposal());
-        dto.setKriteriaKelengkapanDokumen(proposal.getKriteriaKelengkapanDokumen());
-        dto.setKesesuaianBidang(proposal.getKesesuaianBidang());
         dto.setSkorRuleBased(proposal.getSkorRuleBased());
         dto.setCreatedAt(proposal.getCreatedAt());
         dto.setUpdatedAt(proposal.getUpdatedAt());
@@ -246,7 +223,7 @@ public class ProposalService {
         return dto;
     }
 
-    public record ProposalStats(int total, int active, int pending, int ruleFailed) {}
+    public record ProposalStats(int total, int active, int pending) {}
 
     @Data
     @Builder

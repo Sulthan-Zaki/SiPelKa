@@ -360,7 +360,7 @@ export default function GrantDashboardPage() {
           <table className="w-full text-left min-w-[1000px]">
             <thead className="sticky top-0 z-10">
               <tr className="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-widest font-bold font-label">
-                <th className="px-8 py-4">Investigator</th>
+                <th className="px-8 py-4">Researcher</th>
                 <th className="px-8 py-4">Research Title</th>
                 <th className="px-8 py-4">Program</th>
                 <th className="px-8 py-4 text-center">Submission Date</th>

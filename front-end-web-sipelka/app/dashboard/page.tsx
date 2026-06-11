@@ -339,7 +339,7 @@ export default function DashboardPage() {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-surface-container-low text-on-surface-variant text-[11px] uppercase tracking-widest font-bold font-label">
-                <th className="px-8 py-4">Investigator</th>
+                <th className="px-8 py-4">Researcher</th>
                 <th className="px-8 py-4">Research Title</th>
                 <th className="px-8 py-4 text-center">Submission Date</th>
                 <th className="px-8 py-4 text-right">Status</th>

@@ -1,5 +1,13 @@
 import api from "./axiosInstance";
 
+export interface CreatePencairanPayload {
+  proposalId: string;
+  adminId: string;
+  tahapPencairan: number;
+  jumlahDana: number;
+  buktiTransferUrl?: string;
+}
+
 export interface PencairanDanaResponse {
   id: string;
   proposalId: string;
@@ -21,6 +29,11 @@ export const pencairanApi = {
 
   getByProposal: async (proposalId: string): Promise<PencairanDanaResponse[]> => {
     const res = await api.get<PencairanDanaResponse[]>(`/api/pencairan/proposal/${proposalId}`);
+    return res.data;
+  },
+
+  create: async (payload: CreatePencairanPayload): Promise<PencairanDanaResponse> => {
+    const res = await api.post<PencairanDanaResponse>("/api/pencairan", payload);
     return res.data;
   },
 

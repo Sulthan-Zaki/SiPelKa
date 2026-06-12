@@ -25,55 +25,62 @@ class DailyLogbookScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        if (controller.logbooks.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.book_outlined,
-                    size: 64,
-                    color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4)),
-                const SizedBox(height: 16),
-                Text('No logbook entries yet',
-                    style: theme.textTheme.bodyLarge),
-                const SizedBox(height: 8),
-                Text('Tap + to add your first entry',
-                    style: theme.textTheme.labelMedium),
-              ],
-            ),
-          );
-        }
-
         return RefreshIndicator(
           onRefresh: () => controller.refresh(),
-          child: ListView(
-            padding: const EdgeInsets.all(24.0),
-            children: [
-              for (final month in controller.sortedMonths)
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: controller.logbooks.isEmpty
+              ? ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   children: [
-                    _buildMonthHeader(theme, month),
-                    ...controller.groupedLogbooks[month]!.asMap().entries.map(
-                          (entry) => _buildLogEntry(
-                            theme,
-                            '${entry.value.tanggalKegiatan.day}',
-                            _getDayName(
-                                entry.value.tanggalKegiatan.weekday),
-                            entry.value.deskripsiProgress,
-                            entry.value.kendala ?? '',
-                            entry.key ==
-                                controller.groupedLogbooks[month]!.length -
-                                    1,
-                            entry.value.id,
-                            controller,
-                          ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.6,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.book_outlined,
+                                size: 64,
+                                color: theme.colorScheme.onSurfaceVariant.withOpacity(0.4)),
+                            const SizedBox(height: 16),
+                            Text('No logbook entries yet',
+                                style: theme.textTheme.bodyLarge),
+                            const SizedBox(height: 8),
+                            Text('Tap + to add your first entry',
+                                style: theme.textTheme.labelMedium),
+                          ],
                         ),
-                    const SizedBox(height: 8),
+                      ),
+                    ),
+                  ],
+                )
+              : ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(24.0),
+                  children: [
+                    for (final month in controller.sortedMonths)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildMonthHeader(theme, month),
+                          ...controller.groupedLogbooks[month]!.asMap().entries.map(
+                                (entry) => _buildLogEntry(
+                                  theme,
+                                  '${entry.value.tanggalKegiatan.day}',
+                                  _getDayName(
+                                      entry.value.tanggalKegiatan.weekday),
+                                  entry.value.deskripsiProgress,
+                                  entry.value.kendala ?? '',
+                                  entry.key ==
+                                      controller.groupedLogbooks[month]!.length -
+                                          1,
+                                  entry.value.id,
+                                  controller,
+                                ),
+                              ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                   ],
                 ),
-            ],
-          ),
         );
       }),
     );
@@ -135,16 +142,31 @@ class DailyLogbookScreen extends StatelessWidget {
                     const SizedBox(height: 16),
                     // Proposal selector
                     DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      itemHeight: null,
                       value: selectedProposalId,
                       decoration: const InputDecoration(
                         labelText: 'Related Proposal',
                       ),
+                      selectedItemBuilder: (BuildContext context) {
+                        return controller.proposals.map<Widget>((p) {
+                          return Text(
+                            p.judulPenelitian,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          );
+                        }).toList();
+                      },
                       items: controller.proposals.map((p) {
                         return DropdownMenuItem(
                           value: p.id,
-                          child: Text(
-                            p.judulPenelitian,
-                            overflow: TextOverflow.ellipsis,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0),
+                            child: Text(
+                              p.judulPenelitian,
+                              maxLines: 3,
+                              style: const TextStyle(fontSize: 13),
+                            ),
                           ),
                         );
                       }).toList(),

@@ -68,7 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ? 'Researcher'
                     : registerController.role.value,
                 decoration: const InputDecoration(),
-                items: ['Researcher', 'Reviewer', 'Admin'].map((role) {
+                items: ['Researcher', 'Reviewer'].map((role) {
                   return DropdownMenuItem(value: role, child: Text(role));
                 }).toList(),
                 onChanged: (value) {

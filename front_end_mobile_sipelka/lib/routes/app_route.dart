@@ -10,4 +10,7 @@ abstract class AppRoutes {
   static const profile = '/profile';
   static const accountSettings = '/account-settings';
   static const researchStats = '/research-stats';
+  static const proposalList = '/proposal-list';
+  static const activeGrants = '/active-grants';
+  static const upcomingDeadlines = '/upcoming-deadlines';
 }

@@ -18,10 +18,12 @@ public class ProgramHibahService {
 
     private final ProgramHibahRepository programHibahRepository;
     private final UserRepository userRepository;
+    private final NotifikasiService notifikasiService;
 
-    public ProgramHibahService(ProgramHibahRepository programHibahRepository, UserRepository userRepository) {
+    public ProgramHibahService(ProgramHibahRepository programHibahRepository, UserRepository userRepository, NotifikasiService notifikasiService) {
         this.programHibahRepository = programHibahRepository;
         this.userRepository = userRepository;
+        this.notifikasiService = notifikasiService;
     }
 
     public ProgramHibahDTO createHibah(ProgramHibahDTO dto) {
@@ -37,7 +39,32 @@ public class ProgramHibahService {
         hibah.setTanggalTutup(dto.getTanggalTutup());
         hibah.setTotalDanaMaksimal(dto.getTotalDanaMaksimal());
 
-        return toDto(programHibahRepository.save(hibah));
+        ProgramHibah saved = programHibahRepository.save(hibah);
+
+        // Notify all researchers about the new program hibah
+        List<User> researchers = userRepository.findAll().stream()
+                .filter(u -> u.getRole() == com.sipelka.backend.model.enums.UserRole.RESEARCHER)
+                .collect(Collectors.toList());
+
+        for (User researcher : researchers) {
+            try {
+                java.util.Map<String, String> data = new java.util.HashMap<>();
+                data.put("type", "grant");
+                data.put("id", saved.getId().toString());
+
+                com.sipelka.backend.dto.NotifikasiDTO notifDto = com.sipelka.backend.dto.NotifikasiDTO.builder()
+                        .userId(researcher.getId())
+                        .judulNotifikasi("Program Hibah Baru")
+                        .pesan("Program hibah baru '" + saved.getNamaProgram() + "' telah dibuka! Silakan ajukan proposal Anda.")
+                        .tipeNotifikasi(com.sipelka.backend.model.enums.TipeNotifikasi.SYSTEM)
+                        .build();
+                notifikasiService.createNotifikasi(notifDto, data);
+            } catch (Exception e) {
+                // Log or ignore to prevent blocking the creation of ProgramHibah
+            }
+        }
+
+        return toDto(saved);
     }
 
     public ProgramHibahDTO updateHibah(UUID id, ProgramHibahDTO dto) {

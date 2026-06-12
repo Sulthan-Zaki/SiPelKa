@@ -9,3 +9,7 @@ export 'proposal_submission_screen.dart';
 export 'notification_screen.dart';
 export 'account_settings_screen.dart';
 export 'research_stats_screen.dart';
+export 'grant_detail_screen.dart';
+export 'proposal_list_screen.dart';
+export 'active_grants_screen.dart';
+export 'upcoming_deadlines_screen.dart';

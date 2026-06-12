@@ -96,6 +96,11 @@ public class UserService {
             throw new IllegalStateException("Account is not activated yet. Please wait for administrator approval.");
         }
 
+        if (req.getFcmToken() != null && !req.getFcmToken().trim().isEmpty()) {
+            user.setFcmToken(req.getFcmToken());
+            userRepository.save(user);
+        }
+
         String token = jwtUtil.generateToken(user.getId(), user.getRole().name());
 
         UserDto.LoginResponse res = new UserDto.LoginResponse();

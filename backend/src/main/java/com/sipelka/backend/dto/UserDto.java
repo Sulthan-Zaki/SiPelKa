@@ -29,6 +29,7 @@ public class UserDto {
     public static class LoginRequest {
         private String email;
         private String password;
+        private String fcmToken;
     }
 
     @Data

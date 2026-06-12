@@ -5,8 +5,9 @@ class LogbookService {
   final ApiService _apiService = ApiService();
 
   Future<List<Logbook>> getLogbooksByProposal(String proposalId) async {
-    final response =
-        await _apiService.get('/api/logbooks/proposal/$proposalId');
+    final response = await _apiService.get(
+      '/api/logbooks/proposal/$proposalId',
+    );
     return (response.data as List<dynamic>)
         .map((e) => Logbook.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -17,8 +18,7 @@ class LogbookService {
     return Logbook.fromJson(response.data as Map<String, dynamic>);
   }
 
-  Future<Logbook> updateLogbook(
-      String id, Map<String, dynamic> data) async {
+  Future<Logbook> updateLogbook(String id, Map<String, dynamic> data) async {
     final response = await _apiService.put('/api/logbooks/$id', data: data);
     return Logbook.fromJson(response.data as Map<String, dynamic>);
   }

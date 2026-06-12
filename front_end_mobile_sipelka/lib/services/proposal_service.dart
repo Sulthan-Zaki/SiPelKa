@@ -16,8 +16,9 @@ class ProposalService {
   }
 
   Future<List<Proposal>> getProposalsByResearcher(String penelitiId) async {
-    final response =
-        await _apiService.get('/api/proposals/peneliti/$penelitiId');
+    final response = await _apiService.get(
+      '/api/proposals/peneliti/$penelitiId',
+    );
     return (response.data as List<dynamic>)
         .map((e) => Proposal.fromJson(e as Map<String, dynamic>))
         .toList();
@@ -33,8 +34,10 @@ class ProposalService {
   }
 
   Future<DashboardStats> getResearcherStats(String penelitiId) async {
-    final response =
-        await _apiService.get('/api/proposals/stats/peneliti/$penelitiId');
+    print('Fetching dashboard stats for penelitiId: $penelitiId');
+    final response = await _apiService.get(
+      '/api/proposals/stats/peneliti/$penelitiId',
+    );
     return DashboardStats.fromJson(response.data as Map<String, dynamic>);
   }
 }

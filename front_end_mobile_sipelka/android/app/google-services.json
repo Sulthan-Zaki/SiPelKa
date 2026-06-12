@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927202029035",
+    "project_id": "sipelka-30c85",
+    "storage_bucket": "sipelka-30c85.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927202029035:android:c88a1d5a41d7e09e547dae",
+        "android_client_info": {
+          "package_name": "com.example.front_end_mobile_sipelka"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDD2n2wTGh8AsOCkbokirJ6DXChEvLcwaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

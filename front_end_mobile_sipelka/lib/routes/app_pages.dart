@@ -49,5 +49,19 @@ class AppPages {
       name: AppRoutes.researchStats,
       page: () => const ResearchStatsScreen(),
     ),
+    GetPage(
+      name: AppRoutes.proposalList,
+      page: () => const ProposalListScreen(),
+      binding: ProposalBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.activeGrants,
+      page: () => const ActiveGrantsScreen(),
+      binding: ProposalBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.upcomingDeadlines,
+      page: () => const UpcomingDeadlinesScreen(),
+    ),
   ];
 }

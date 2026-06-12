@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'daily_logbook_screen.dart';
 import 'proposal_submission_screen.dart';
+import 'proposal_list_screen.dart';
+import 'active_grants_screen.dart';
+import 'upcoming_deadlines_screen.dart';
 import 'notification_screen.dart';
 import 'package:front_end_mobile_sipelka/controllers/dashboard_controller.dart';
 import 'package:front_end_mobile_sipelka/models/dashboard_stats.dart';
@@ -17,6 +20,7 @@ class DashboardScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Dashboard',
             style: TextStyle(fontWeight: FontWeight.bold)),
         actions: [
@@ -56,9 +60,15 @@ class DashboardScreen extends StatelessWidget {
           return const Center(child: CircularProgressIndicator());
         }
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
+        return RefreshIndicator(
+          onRefresh: () async {
+            await controller.loadDashboard();
+            await controller.loadNotifications();
+          },
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
@@ -74,11 +84,7 @@ class DashboardScreen extends StatelessWidget {
                 children: [
                   Expanded(
                     child: InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const DailyLogbookScreen()),
-                      ),
+                      onTap: () => Get.to(() => const ActiveGrantsScreen()),
                       child: _buildStatCard(
                         context,
                         'Active Grants',
@@ -91,11 +97,7 @@ class DashboardScreen extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: InkWell(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (_) => const ProposalSubmissionScreen()),
-                      ),
+                      onTap: () => Get.to(() => const ProposalListScreen()),
                       child: _buildStatCard(
                         context,
                         'Proposals',
@@ -108,25 +110,26 @@ class DashboardScreen extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 32),
-              _buildSectionHeader(theme, 'Recent Logbooks', () {}),
+              _buildSectionHeader(theme, 'Recent Logbooks', () => Get.to(() => const DailyLogbookScreen())),
               const SizedBox(height: 16),
               if (controller.recentLogbooks.isEmpty)
                 _buildEmptyState(theme, 'No recent logbooks')
               else
-                ...controller.recentLogbooks.map(
+                ...controller.recentLogbooks.take(3).map(
                     (logbook) => _buildLogbookItem(theme, logbook)),
               const SizedBox(height: 32),
-              _buildSectionHeader(theme, 'Upcoming Deadlines', () {}),
+              _buildSectionHeader(theme, 'Upcoming Deadlines', () => Get.to(() => const UpcomingDeadlinesScreen())),
               const SizedBox(height: 16),
               if (controller.upcomingDeadlines.isEmpty)
                 _buildEmptyState(theme, 'No upcoming deadlines')
               else
-                ...controller.upcomingDeadlines.map(
+                ...controller.upcomingDeadlines.take(3).map(
                     (deadline) => _buildDeadlineItem(theme, deadline)),
             ],
           ),
-        );
-      }),
+        )
+      );
+    }),
     );
   }
 

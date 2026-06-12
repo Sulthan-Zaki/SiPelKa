@@ -17,13 +17,19 @@ public class NotifikasiService {
 
     private final NotifikasiRepository notifikasiRepository;
     private final UserRepository userRepository;
+    private final FcmService fcmService;
 
-    public NotifikasiService(NotifikasiRepository notifikasiRepository, UserRepository userRepository) {
+    public NotifikasiService(NotifikasiRepository notifikasiRepository, UserRepository userRepository, FcmService fcmService) {
         this.notifikasiRepository = notifikasiRepository;
         this.userRepository = userRepository;
+        this.fcmService = fcmService;
     }
 
     public NotifikasiDTO createNotifikasi(NotifikasiDTO dto) {
+        return createNotifikasi(dto, null);
+    }
+
+    public NotifikasiDTO createNotifikasi(NotifikasiDTO dto, java.util.Map<String, String> data) {
         User user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", dto.getUserId()));
 
@@ -34,7 +40,14 @@ public class NotifikasiService {
         notifikasi.setTipeNotifikasi(dto.getTipeNotifikasi());
         notifikasi.setIsRead(false);
 
-        return toDto(notifikasiRepository.save(notifikasi));
+        Notifikasi saved = notifikasiRepository.save(notifikasi);
+
+        // Send FCM Push Notification if the user has an FCM token
+        if (user.getFcmToken() != null && !user.getFcmToken().trim().isEmpty()) {
+            fcmService.sendPushNotification(user.getFcmToken(), saved.getJudulNotifikasi(), saved.getPesan(), data);
+        }
+
+        return toDto(saved);
     }
 
     public NotifikasiDTO markAsRead(UUID notifikasiId) {

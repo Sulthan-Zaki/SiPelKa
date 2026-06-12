@@ -34,17 +34,36 @@ class LogbookController extends GetxController {
 
   String _formatMonthYear(DateTime date) {
     const months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${months[date.month - 1]} ${date.year}';
   }
 
   DateTime _parseMonthYear(String monthYear) {
     const months = {
-      'Januari': 1, 'Februari': 2, 'Maret': 3, 'April': 4,
-      'Mei': 5, 'Juni': 6, 'Juli': 7, 'Agustus': 8,
-      'September': 9, 'Oktober': 10, 'November': 11, 'Desember': 12,
+      'Januari': 1,
+      'Februari': 2,
+      'Maret': 3,
+      'April': 4,
+      'Mei': 5,
+      'Juni': 6,
+      'Juli': 7,
+      'Agustus': 8,
+      'September': 9,
+      'Oktober': 10,
+      'November': 11,
+      'Desember': 12,
     };
     final parts = monthYear.split(' ');
     final month = months[parts[0]] ?? 1;
@@ -65,18 +84,26 @@ class LogbookController extends GetxController {
       final userId = userData is Map ? userData['id'] as String? : null;
       if (userId == null) return;
 
-      final userProposals =
-          await ProposalService().getProposalsByResearcher(userId);
-      proposals.value = userProposals;
+      final userProposals = await ProposalService().getProposalsByResearcher(
+        userId,
+      );
+      final approvedProposals = userProposals
+          .where((p) => p.statusProposal.toUpperCase() == 'APPROVED')
+          .toList();
+      proposals.value = approvedProposals;
+      print('Found ${approvedProposals.length} approved proposals for user $userId');
 
       final allLogbooks = <Logbook>[];
-      for (final proposal in userProposals) {
-        final proposalLogbooks =
-            await LogbookService().getLogbooksByProposal(proposal.id);
+      for (final proposal in approvedProposals) {
+        final proposalLogbooks = await LogbookService().getLogbooksByProposal(
+          proposal.id,
+        );
         allLogbooks.addAll(proposalLogbooks);
       }
+      print('Found ${allLogbooks.length} logbooks across all proposals');
       allLogbooks.sort(
-          (a, b) => b.tanggalKegiatan.compareTo(a.tanggalKegiatan));
+        (a, b) => b.tanggalKegiatan.compareTo(a.tanggalKegiatan),
+      );
       logbooks.value = allLogbooks;
     } catch (e) {
       Get.snackbar('Error', 'Failed to load logbooks');

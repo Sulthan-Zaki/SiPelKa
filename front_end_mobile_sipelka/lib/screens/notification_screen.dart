@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/models/notification.dart';
 import 'package:front_end_mobile_sipelka/services/notification_service.dart';
 import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/models/storage_key.dart';
+import 'package:front_end_mobile_sipelka/controllers/dashboard_controller.dart';
+
 
 class NotificationScreen extends StatefulWidget {
   const NotificationScreen({super.key});
@@ -34,6 +37,21 @@ class _NotificationScreenState extends State<NotificationScreen> {
           final bTime = b.createdAt ?? DateTime(2000);
           return bTime.compareTo(aTime);
         });
+
+        // Automatically mark all loaded unread notifications as read
+        for (var notification in notifications) {
+          if (notification.isRead != true) {
+            NotificationService()
+                .markAsRead(notification.id)
+                .catchError((_) => notification);
+          }
+        }
+
+        // Reset the unread badge count in DashboardController
+        if (Get.isRegistered<DashboardController>()) {
+          Get.find<DashboardController>().unreadNotifications.value = 0;
+        }
+
         setState(() => _notifications
           ..clear()
           ..addAll(notifications));

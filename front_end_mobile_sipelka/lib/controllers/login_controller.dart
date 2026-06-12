@@ -4,6 +4,7 @@ import 'package:front_end_mobile_sipelka/services/api_service.dart';
 import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/models/storage_key.dart';
 import 'package:front_end_mobile_sipelka/screens/main_navigation.dart';
+import 'package:front_end_mobile_sipelka/services/fcm_handler.dart';
 
 class LoginController extends GetxController {
   final email = ''.obs;
@@ -26,9 +27,14 @@ class LoginController extends GetxController {
     isLoading.value = true;
 
     try {
+      final fcmToken = await FcmHandler.instance.getFcmToken();
       final response = await apiService.post(
         '/api/users/login',
-        data: {'email': email.value, 'password': password.value},
+        data: {
+          'email': email.value,
+          'password': password.value,
+          'fcmToken': fcmToken,
+        },
       );
       if (response.statusCode != 200) {
         throw Exception('Failed to login');

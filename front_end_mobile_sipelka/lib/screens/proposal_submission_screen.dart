@@ -4,7 +4,9 @@ import 'package:file_picker/file_picker.dart';
 import 'package:front_end_mobile_sipelka/controllers/proposal_controller.dart';
 
 class ProposalSubmissionScreen extends StatefulWidget {
-  const ProposalSubmissionScreen({super.key});
+  final String? initialGrantId;
+
+  const ProposalSubmissionScreen({super.key, this.initialGrantId});
 
   @override
   State<ProposalSubmissionScreen> createState() =>
@@ -15,6 +17,23 @@ class _ProposalSubmissionScreenState extends State<ProposalSubmissionScreen> {
   final _titleController = TextEditingController();
   final _abstractController = TextEditingController();
   String? _selectedFilePath;
+
+  @override
+  void initState() {
+    super.initState();
+    final controller = Get.put(ProposalController());
+    if (widget.initialGrantId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (controller.grants.isEmpty) {
+          await controller.loadGrants();
+        }
+        final grant = controller.grants.firstWhereOrNull((g) => g.id == widget.initialGrantId);
+        if (grant != null) {
+          controller.selectGrant(grant);
+        }
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +49,12 @@ class _ProposalSubmissionScreenState extends State<ProposalSubmissionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'New Research Proposal',
+            Obx(() => Text(
+              controller.selectedGrant.value != null
+                  ? 'Proposal for ${controller.selectedGrant.value!.namaProgram}'
+                  : 'New Research Proposal',
               style: theme.textTheme.displayMedium?.copyWith(fontSize: 24),
-            ),
+            )),
             const SizedBox(height: 32),
             _buildLabel(theme, 'Research Title'),
             TextField(
@@ -49,11 +70,15 @@ class _ProposalSubmissionScreenState extends State<ProposalSubmissionScreen> {
                 return const Text('No grants available');
               }
               return DropdownButtonFormField<String>(
+                isExpanded: true,
                 value: controller.selectedGrant.value?.id,
                 items: controller.grants.map((grant) {
                   return DropdownMenuItem(
                     value: grant.id,
-                    child: Text(grant.namaProgram),
+                    child: Text(
+                      grant.namaProgram,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   );
                 }).toList(),
                 onChanged: (v) {

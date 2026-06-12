@@ -14,9 +14,11 @@ class ApiService {
     final fromEnv = const String.fromEnvironment('BACKEND_URL');
     if (fromEnv.isNotEmpty) return fromEnv;
     try {
-      return dotenv.env['BACKEND_URL'] ?? 'http://localhost:8080';
+      final url_be = dotenv.env['BACKEND_URL'] ?? 'http://192.168.0.104:8080';
+      print('Using backend URL: $url_be');
+      return url_be;
     } catch (_) {
-      return 'http://localhost:8080';
+      return 'http://192.168.0.104:8080';
     }
   }
 
@@ -32,23 +34,28 @@ class ApiService {
 
     dio.interceptors.add(
       InterceptorsWrapper(
-        onRequest: (options, handler) {
+        onRequest: (options, handler) async {
+          final token = await LocalStorageService.read(StorageKey.token);
+          print('Token from storage: $token');
+          if (token != null) {
+            options.headers['Authorization'] = 'Bearer $token';
+          }
           print(
-            "REQUEST => method: ${options.method}, path: ${options.baseUrl}${options.path}",
+            "REQUEST => method: ${options.method}, path: ${options.baseUrl}${options.path} \n headers: ${options.headers}",
           );
           print("DATA => ${options.data}");
           return handler.next(options);
         },
         onResponse: (response, handler) {
           print(
-            "RESPONSE => baseUrl: ${response.requestOptions.baseUrl}, statusCode: ${response.statusCode}",
+            "RESPONSE => baseUrl: ${response.requestOptions.baseUrl} ${response.requestOptions.path}, statusCode: ${response.statusCode}",
           );
           print("BODY => ${response.data}");
           return handler.next(response);
         },
         onError: (DioException e, handler) {
           print(
-            "ERROR => baseUrl: ${e.requestOptions.baseUrl}\n message: ${e.message}",
+            "ERROR => baseUrl: ${e.requestOptions.baseUrl} ${e.requestOptions.path}\n message: ${e.message}",
           );
           return handler.next(e);
         },

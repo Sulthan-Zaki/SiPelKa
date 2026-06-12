@@ -6,9 +6,13 @@ import 'models/storage_key.dart';
 import 'routes/app_pages.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'services/api_service.dart';
+import 'services/fcm_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Firebase Cloud Messaging asynchronously (does not block UI startup)
+  FcmHandler.instance.initialize();
 
   try {
     await dotenv.load(fileName: ".env");

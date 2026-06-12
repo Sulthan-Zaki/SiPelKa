@@ -16,8 +16,11 @@ class ProfileScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Profile', style: TextStyle(fontWeight: FontWeight.bold)),
+        automaticallyImplyLeading: false,
+        title: const Text(
+          'Profile',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -36,10 +39,15 @@ class ProfileScreen extends StatelessWidget {
                           shape: BoxShape.circle,
                           color: theme.colorScheme.primary.withOpacity(0.1),
                           border: Border.all(
-                              color: theme.colorScheme.primary, width: 2),
+                            color: theme.colorScheme.primary,
+                            width: 2,
+                          ),
                         ),
-                        child: const Icon(Icons.person,
-                            size: 60, color: Color(0xFF7F080C)),
+                        child: const Icon(
+                          Icons.person,
+                          size: 60,
+                          color: Color(0xFF7F080C),
+                        ),
                       ),
                       Positioned(
                         bottom: 0,
@@ -50,21 +58,28 @@ class ProfileScreen extends StatelessWidget {
                             color: theme.colorScheme.primary,
                             shape: BoxShape.circle,
                           ),
-                          child:
-                              const Icon(Icons.edit, color: Colors.white, size: 16),
+                          child: const Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                            size: 16,
+                          ),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  Obx(() => Text(
-                        controller.name.value,
-                        style: theme.textTheme.headlineSmall,
-                      )),
-                  Obx(() => Text(
-                        '${controller.role.value} | NIP: ${controller.nip.value}',
-                        style: theme.textTheme.labelMedium,
-                      )),
+                  Obx(
+                    () => Text(
+                      controller.name.value,
+                      style: theme.textTheme.headlineSmall,
+                    ),
+                  ),
+                  Obx(
+                    () => Text(
+                      '${controller.role.value} | NIP: ${controller.nip.value}',
+                      style: theme.textTheme.labelMedium,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -116,20 +131,11 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            _buildProfileMenu(
-              context,
-              'Logout',
-              Icons.logout,
-              () async {
-                await LocalStorageService.clear();
-                ApiService().clearToken();
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              },
-              isDestructive: true,
-            ),
+            _buildProfileMenu(context, 'Logout', Icons.logout, () async {
+              await LocalStorageService.clear();
+              ApiService().clearToken();
+              Get.offAllNamed(AppRoutes.login);
+            }, isDestructive: true),
             const SizedBox(height: 40),
           ],
         ),
@@ -137,9 +143,13 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileMenu(BuildContext context, String title, IconData icon,
-      VoidCallback onTap,
-      {bool isDestructive = false}) {
+  Widget _buildProfileMenu(
+    BuildContext context,
+    String title,
+    IconData icon,
+    VoidCallback onTap, {
+    bool isDestructive = false,
+  }) {
     final theme = Theme.of(context);
     return ListTile(
       onTap: onTap,
@@ -165,8 +175,7 @@ class ProfileScreen extends StatelessWidget {
         ),
       ),
       trailing: const Icon(Icons.chevron_right, size: 20),
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 4),
     );
   }
 }

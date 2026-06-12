@@ -60,10 +60,12 @@ class DashboardController extends GetxController {
       final userId = userData is Map ? userData['id'] as String? : null;
       if (userId == null) return;
 
-      final notifications =
-          await NotificationService().getNotificationsByUser(userId);
-      unreadNotifications.value =
-          notifications.where((n) => n.isRead == false).length;
+      final notifications = await NotificationService().getNotificationsByUser(
+        userId,
+      );
+      unreadNotifications.value = notifications
+          .where((n) => n.isRead == false)
+          .length;
     } catch (e) {
       // Silently fail
     }

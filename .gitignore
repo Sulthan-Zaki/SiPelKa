@@ -5,3 +5,4 @@ PRD.md
 skills-lock.json
 AGENTS.md
 .playwright-mcp
+backend/src/main/resources/firebase-service-account.json

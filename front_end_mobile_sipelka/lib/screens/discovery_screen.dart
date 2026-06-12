@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/controllers/discovery_controller.dart';
 import 'package:front_end_mobile_sipelka/models/grant.dart';
+import 'grant_detail_screen.dart';
 
 class DiscoveryScreen extends StatelessWidget {
   const DiscoveryScreen({super.key});
@@ -10,10 +11,10 @@ class DiscoveryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final controller = Get.put(DiscoveryController(), permanent: true);
     final theme = Theme.of(context);
-    final filters = ['All', 'Internal', 'National', 'International', 'Science'];
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Grant Discovery',
             style: TextStyle(fontWeight: FontWeight.bold)),
       ),
@@ -24,6 +25,7 @@ class DiscoveryScreen extends StatelessWidget {
             child: Column(
               children: [
                 Obx(() => TextField(
+                      controller: controller.searchController,
                       onChanged: (value) => controller.setSearchQuery(value),
                       decoration: InputDecoration(
                         hintText: 'Search grants...',
@@ -33,7 +35,7 @@ class DiscoveryScreen extends StatelessWidget {
                             ? IconButton(
                                 icon: const Icon(Icons.clear),
                                 onPressed: () =>
-                                    controller.setSearchQuery(''),
+                                    controller.clearSearchQuery(),
                               )
                             : null,
                       ),
@@ -42,7 +44,7 @@ class DiscoveryScreen extends StatelessWidget {
                 Obx(() => SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                        children: filters.map((filter) {
+                        children: controller.availableFilters.map((filter) {
                           final isSelected =
                               controller.selectedFilter.value == filter;
                           return Padding(
@@ -67,8 +69,8 @@ class DiscoveryScreen extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(20),
                                 side: BorderSide(
                                   color: isSelected
-                                      ? theme.colorScheme.primary
-                                      : theme.colorScheme.outlineVariant,
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.outlineVariant,
                                 ),
                               ),
                             ),
@@ -87,30 +89,40 @@ class DiscoveryScreen extends StatelessWidget {
 
               final filtered = controller.filteredGrants;
 
-              if (filtered.isEmpty) {
-                return Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.search_off,
-                          size: 64,
-                          color: theme.colorScheme.onSurfaceVariant
-                              .withOpacity(0.4)),
-                      const SizedBox(height: 16),
-                      Text('No grants found',
-                          style: theme.textTheme.bodyLarge),
-                    ],
-                  ),
-                );
-              }
-
-              return ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                children: [
-                  ...filtered.map(
-                      (grant) => _buildGrantCard(context, grant)),
-                  const SizedBox(height: 24),
-                ],
+              return RefreshIndicator(
+                onRefresh: () => controller.loadGrants(),
+                child: filtered.isEmpty
+                    ? ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.4,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.search_off,
+                                      size: 64,
+                                      color: theme.colorScheme.onSurfaceVariant
+                                          .withOpacity(0.4)),
+                                  const SizedBox(height: 16),
+                                  Text('No grants found',
+                                      style: theme.textTheme.bodyLarge),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    : ListView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                        children: [
+                          ...filtered.map(
+                              (grant) => _buildGrantCard(context, grant)),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
               );
             }),
           ),
@@ -183,8 +195,19 @@ class DiscoveryScreen extends StatelessWidget {
                 )
               else
                 const SizedBox.shrink(),
-              Icon(Icons.bookmark_border,
-                  color: theme.colorScheme.onSurfaceVariant),
+              Obx(() {
+                final controller = Get.find<DiscoveryController>();
+                final isBookmarked = controller.bookmarkedGrantIds.contains(grant.id);
+                return IconButton(
+                  icon: Icon(
+                    isBookmarked ? Icons.bookmark : Icons.bookmark_border,
+                    color: isBookmarked
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                  onPressed: () => controller.toggleBookmark(grant.id),
+                );
+              }),
             ],
           ),
           const SizedBox(height: 12),
@@ -194,8 +217,10 @@ class DiscoveryScreen extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Text(
-            grant.adminId ?? '',
+            grant.deskripsi ?? '',
             style: theme.textTheme.labelMedium,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 20),
           Row(
@@ -231,13 +256,7 @@ class DiscoveryScreen extends StatelessWidget {
           SizedBox(
             width: double.infinity,
             child: OutlinedButton(
-              onPressed: () {
-                Get.snackbar(
-                  grant.namaProgram,
-                  'Viewing details for ${grant.namaProgram}',
-                  snackPosition: SnackPosition.BOTTOM,
-                );
-              },
+              onPressed: () => Get.to(() => GrantDetailScreen(grant: grant)),
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: theme.colorScheme.primary),
                 shape: RoundedRectangleBorder(
@@ -251,3 +270,30 @@ class DiscoveryScreen extends StatelessWidget {
     );
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -10,6 +10,8 @@ services:
     volumes:
       # Mount the source code into the container so changes are reflected automatically
       - ./src:/app/src
+      # Mount the uploads folder so that uploaded photos and PDFs persist
+      - ./uploads:/app/uploads
     environment:
       # Override the local datasource to connect to the docker network's postgres container
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sipelka_db
@@ -28,3 +30,8 @@ services:
       - 'POSTGRES_PASSWORD=sipelka_secret'
     ports:
       - '5433:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

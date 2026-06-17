@@ -51,6 +51,7 @@ public class UserDto {
         private String nip;
         private String password;
         private UserRole role;
+        private String profilePhotoUrl;
         
         @JsonProperty("isActivated")
         private boolean isActivated;
@@ -63,6 +64,7 @@ public class UserDto {
         private String email;
         private String nip;
         private UserRole role;
+        private String profilePhotoUrl;
         
         @JsonProperty("isActivated")
         private boolean isActivated;

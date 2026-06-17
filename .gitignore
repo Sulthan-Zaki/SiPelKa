@@ -6,3 +6,4 @@ skills-lock.json
 AGENTS.md
 .playwright-mcp
 backend/src/main/resources/firebase-service-account.json
+backend/firebase-service-account.json

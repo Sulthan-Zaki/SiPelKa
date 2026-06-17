@@ -7,6 +7,14 @@ import GrantForm, { type GrantFormPayload } from "@/components/GrantForm";
 import { useToast } from "@/components/Toast";
 import { getCurrentUser } from "@/lib/authGuard";
 
+const getFileUrl = (url: string) => {
+  if (!url) return "#";
+  if (url.startsWith("http")) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 export default function GrantDashboardPage() {
   const { toast } = useToast();
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
@@ -403,9 +411,22 @@ export default function GrantDashboardPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <p className="text-sm font-medium text-on-surface line-clamp-1 font-body">
-                        {row.judulPenelitian}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-on-surface line-clamp-1 font-body">
+                          {row.judulPenelitian}
+                        </p>
+                        {row.dokumenUrl && (
+                          <a
+                            href={getFileUrl(row.dokumenUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-primary hover:opacity-80"
+                            title="Download Proposal PDF"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">download</span>
+                          </a>
+                        )}
+                      </div>
                     </td>
                     <td className="px-8 py-5 text-xs text-on-surface-variant font-body">
                       {row.hibahName}

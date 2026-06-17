@@ -157,6 +157,7 @@ public class UserService {
             user.setRole(req.getRole());
         }
         user.setActivated(req.isActivated());
+        user.setProfilePhotoUrl(req.getProfilePhotoUrl());
 
         if (req.getPassword() != null && !req.getPassword().trim().isEmpty()) {
             user.setPassword(passwordEncoder.encode(req.getPassword()));
@@ -181,6 +182,13 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public UserDto.Response updateProfilePhoto(UUID id, String profilePhotoUrl) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setProfilePhotoUrl(profilePhotoUrl);
+        return toResponse(userRepository.save(user));
+    }
+
     private UserDto.Response toResponse(User user) {
         UserDto.Response res = new UserDto.Response();
         res.setId(user.getId());
@@ -188,6 +196,7 @@ public class UserService {
         res.setEmail(user.getEmail());
         res.setNip(user.getNip());
         res.setRole(user.getRole());
+        res.setProfilePhotoUrl(user.getProfilePhotoUrl());
         res.setActivated(user.isActivated());
         return res;
     }

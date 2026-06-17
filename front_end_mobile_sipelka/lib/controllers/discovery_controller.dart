@@ -41,7 +41,10 @@ class DiscoveryController extends GetxController {
   List<String> get availableFilters {
     final categories = grants
         .map((g) => g.bidangFokus)
-        .where((c) => c != null && c.trim().isNotEmpty)
+        .where((c) => c != null && 
+                      c.trim().isNotEmpty && 
+                      c.trim().toLowerCase() != 'all' && 
+                      c.trim().toLowerCase() != 'bookmarked')
         .map((c) => _capitalize(c!.trim()))
         .toSet()
         .toList();

@@ -7,6 +7,14 @@ import DisbursementForm from "@/components/DisbursementForm";
 import { proposalApi, type ProposalResponse } from "@/lib/proposalApi";
 import { getCurrentUser } from "@/lib/authGuard";
 
+const getFileUrl = (url: string) => {
+  if (!url) return "#";
+  if (url.startsWith("http")) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 const STATUS_OPTIONS: { value: PencairanDanaResponse["statusPencairan"]; label: string }[] = [
   { value: "PENDING", label: "Pending" },
   { value: "PROSES", label: "In Process" },
@@ -351,7 +359,7 @@ export default function DisbursementStatusPage() {
                   </p>
                   {d.buktiTransferUrl && (
                     <a
-                      href={d.buktiTransferUrl}
+                      href={getFileUrl(d.buktiTransferUrl)}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-[10px] text-primary underline mt-0.5 inline-block font-label"

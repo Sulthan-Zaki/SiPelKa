@@ -1,7 +1,9 @@
 package com.sipelka.backend.service;
 
 import com.sipelka.backend.dto.LogbookPenelitianDTO;
+import com.sipelka.backend.dto.NotifikasiDTO;
 import com.sipelka.backend.dto.ProposalDTO;
+import com.sipelka.backend.model.enums.TipeNotifikasi;
 import com.sipelka.backend.exception.ResourceNotFoundException;
 import com.sipelka.backend.model.LogbookPenelitian;
 import com.sipelka.backend.model.ProgramHibah;
@@ -35,13 +37,15 @@ public class ProposalService {
     private final ProgramHibahRepository programHibahRepository;
     private final LogbookPenelitianRepository logbookPenelitianRepository;
     private final RuleBasedScreeningService ruleBasedScreeningService;
+    private final NotifikasiService notifikasiService;
 
-    public ProposalService(ProposalRepository proposalRepository, UserRepository userRepository, ProgramHibahRepository programHibahRepository, LogbookPenelitianRepository logbookPenelitianRepository, RuleBasedScreeningService ruleBasedScreeningService) {
+    public ProposalService(ProposalRepository proposalRepository, UserRepository userRepository, ProgramHibahRepository programHibahRepository, LogbookPenelitianRepository logbookPenelitianRepository, RuleBasedScreeningService ruleBasedScreeningService, NotifikasiService notifikasiService) {
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
         this.programHibahRepository = programHibahRepository;
         this.logbookPenelitianRepository = logbookPenelitianRepository;
         this.ruleBasedScreeningService = ruleBasedScreeningService;
+        this.notifikasiService = notifikasiService;
     }
 
     public ProposalDTO createProposal(ProposalDTO dto) {
@@ -128,8 +132,23 @@ public class ProposalService {
         Proposal proposal = proposalRepository.findByIdWithPenelitiAndHibah(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Proposal", "id", id));
 
-        proposal.setStatusProposal(StatusProposal.valueOf(status));
-        return toDto(proposalRepository.save(proposal));
+        StatusProposal prevStatus = proposal.getStatusProposal();
+        StatusProposal newStatus = StatusProposal.valueOf(status);
+        proposal.setStatusProposal(newStatus);
+        Proposal saved = proposalRepository.save(proposal);
+
+        if (newStatus != prevStatus && (newStatus == StatusProposal.APPROVED || newStatus == StatusProposal.REJECTED)) {
+            String statusString = newStatus == StatusProposal.APPROVED ? "disetujui" : "ditolak";
+            NotifikasiDTO notifDto = new NotifikasiDTO();
+            notifDto.setUserId(saved.getPeneliti().getId());
+            notifDto.setJudulNotifikasi("Status Proposal Diperbarui");
+            notifDto.setPesan(String.format("Proposal Anda yang berjudul \"%s\" telah %s.", saved.getJudulPenelitian(), statusString));
+            notifDto.setTipeNotifikasi(TipeNotifikasi.STATUS_UPDATE);
+            notifDto.setIsRead(false);
+            notifikasiService.createNotifikasi(notifDto);
+        }
+
+        return toDto(saved);
     }
 
     public void deleteProposal(UUID id) {
@@ -156,7 +175,7 @@ public class ProposalService {
                 .filter(p -> p.getStatusProposal() == StatusProposal.DRAFT)
                 .count();
         long submittedProposals = proposals.stream()
-                .filter(p -> p.getStatusProposal() == StatusProposal.SUBMITTED)
+                .filter(p -> p.getStatusProposal() == StatusProposal.SUBMITTED || p.getStatusProposal() == StatusProposal.UNDER_REVIEW)
                 .count();
         long approvedProposals = proposals.stream()
                 .filter(p -> p.getStatusProposal() == StatusProposal.APPROVED)

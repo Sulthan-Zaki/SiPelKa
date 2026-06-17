@@ -23,6 +23,9 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "SiPelKa | Institutional Research Platform",
   description: "Sistem Manajemen Penelitian dan Pengabdian Masyarakat",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export default function RootLayout({

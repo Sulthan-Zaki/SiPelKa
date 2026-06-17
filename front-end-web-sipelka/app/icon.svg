@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="sipelkaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#c41e3a" />
+      <stop offset="100%" stop-color="#6e0000" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#sipelkaGrad)" />
+  <path d="M16 7 L6 12 L26 12 Z M7 13 H25 V15 H7 Z M9 16 H11 V22 H9 Z M15 16 H17 V22 H15 Z M21 16 H23 V22 H21 Z M6 23 H26 V25 H6 Z" fill="#ffffff" />
+</svg>

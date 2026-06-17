@@ -5,6 +5,14 @@ import { proposalApi, type ProposalStats, type ProposalResponse } from "@/lib/pr
 import { hibahApi, type ProgramHibahResponse } from "@/lib/hibahApi";
 import { getCurrentUser } from "@/lib/authGuard";
 
+const getFileUrl = (url: string) => {
+  if (!url) return "#";
+  if (url.startsWith("http")) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 interface MonthlyCount {
   month: string;
   count: number;
@@ -18,9 +26,10 @@ export default function DashboardPage() {
   const [programs, setPrograms] = useState<ProgramHibahResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const user = getCurrentUser();
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
+    setUser(getCurrentUser());
     let cancelled = false;
     const fetchData = async () => {
       try {
@@ -380,9 +389,22 @@ export default function DashboardPage() {
                       </div>
                     </td>
                     <td className="px-8 py-5">
-                      <p className="text-sm font-medium text-on-surface line-clamp-1 font-body">
-                        {row.judulPenelitian}
-                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-medium text-on-surface line-clamp-1 font-body">
+                          {row.judulPenelitian}
+                        </p>
+                        {row.dokumenUrl && (
+                          <a
+                            href={getFileUrl(row.dokumenUrl)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center text-primary hover:opacity-80"
+                            title="Download Proposal PDF"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">download</span>
+                          </a>
+                        )}
+                      </div>
                       <p className="text-[10px] text-on-surface-variant font-body">
                         Program: {row.hibahName}
                       </p>

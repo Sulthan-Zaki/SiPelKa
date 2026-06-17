@@ -4,6 +4,14 @@ import { useEffect, useState, useCallback } from "react";
 import { proposalApi, type ProposalResponse } from "@/lib/proposalApi";
 import { useToast } from "@/components/Toast";
 
+const getFileUrl = (url: string) => {
+  if (!url) return "#";
+  if (url.startsWith("http")) return url;
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const cleanBaseUrl = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+  return `${cleanBaseUrl}${url.startsWith("/") ? "" : "/"}${url}`;
+};
+
 export default function EligibilityEvaluationPage() {
   const { toast } = useToast();
   const [proposals, setProposals] = useState<ProposalResponse[]>([]);
@@ -210,8 +218,21 @@ export default function EligibilityEvaluationPage() {
                         #{row.id.slice(-8).toUpperCase()}
                       </td>
                       <td className="px-6 py-4 text-sm text-on-surface">{row.penelitiName || "Unknown"}</td>
-                      <td className="px-6 py-4 text-sm text-on-surface font-body line-clamp-1">
-                        {row.judulPenelitian}
+                      <td className="px-6 py-4 text-sm text-on-surface font-body">
+                        <div className="flex items-center gap-2">
+                          <span className="line-clamp-1">{row.judulPenelitian}</span>
+                          {row.dokumenUrl && (
+                            <a
+                              href={getFileUrl(row.dokumenUrl)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center text-primary hover:opacity-80 shrink-0"
+                              title="Download Proposal PDF"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">download</span>
+                            </a>
+                          )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-center text-sm font-semibold">{row.skorRuleBased ?? 0}</td>
                       <td className="px-6 py-4 text-center">

@@ -45,6 +45,9 @@ public class User {
     @Column(name = "fcm_token")
     private String fcmToken;
 
+    @Column(name = "profile_photo_url")
+    private String profilePhotoUrl;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

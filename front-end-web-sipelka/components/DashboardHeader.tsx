@@ -14,6 +14,15 @@ export default function DashboardHeader() {
       .toUpperCase();
   };
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const getAvatarUrl = (photoUrl?: string) => {
+    if (!photoUrl) return null;
+    if (photoUrl.startsWith("http")) return photoUrl;
+    return `${baseUrl}${photoUrl}`;
+  };
+
+  const avatarUrl = getAvatarUrl(user?.profilePhotoUrl);
+
   return (
     <header className="w-full h-16 sticky top-0 z-40 glass-effect border-b border-outline-variant/20 flex items-center justify-between px-8">
       <div />
@@ -26,8 +35,18 @@ export default function DashboardHeader() {
             {user?.role || "Unknown"}
           </p>
         </div>
-        <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[11px] font-bold font-label ring-2 ring-primary/10 shrink-0">
-          {user?.name ? getInitials(user.name) : "U"}
+        <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[11px] font-bold font-label ring-2 ring-primary/10 shrink-0 overflow-hidden">
+          {avatarUrl ? (
+            <img
+              src={avatarUrl}
+              alt={user?.name || "User"}
+              className="w-full h-full object-cover"
+            />
+          ) : user?.name ? (
+            getInitials(user.name)
+          ) : (
+            "U"
+          )}
         </div>
       </div>
     </header>

@@ -1,6 +1,8 @@
 package com.sipelka.backend.service;
 
 import com.sipelka.backend.dto.ReviewProposalDTO;
+import com.sipelka.backend.dto.NotifikasiDTO;
+import com.sipelka.backend.model.enums.TipeNotifikasi;
 import com.sipelka.backend.exception.ResourceNotFoundException;
 import com.sipelka.backend.model.Proposal;
 import com.sipelka.backend.model.ReviewProposal;
@@ -24,11 +26,13 @@ public class ReviewProposalService {
     private final ReviewProposalRepository reviewProposalRepository;
     private final ProposalRepository proposalRepository;
     private final UserRepository userRepository;
+    private final NotifikasiService notifikasiService;
 
-    public ReviewProposalService(ReviewProposalRepository reviewProposalRepository, ProposalRepository proposalRepository, UserRepository userRepository) {
+    public ReviewProposalService(ReviewProposalRepository reviewProposalRepository, ProposalRepository proposalRepository, UserRepository userRepository, NotifikasiService notifikasiService) {
         this.reviewProposalRepository = reviewProposalRepository;
         this.proposalRepository = proposalRepository;
         this.userRepository = userRepository;
+        this.notifikasiService = notifikasiService;
     }
 
     public ReviewProposalDTO assignReviewer(UUID proposalId, UUID reviewerId) {
@@ -60,12 +64,21 @@ public class ReviewProposalService {
 
         // Update Proposal status based on recommendation
         Proposal proposal = review.getProposal();
-        if (dto.getStatusRekomendasi() == StatusRekomendasi.LAYAK) {
-            proposal.setStatusProposal(StatusProposal.APPROVED);
-        } else {
-            proposal.setStatusProposal(StatusProposal.REJECTED);
-        }
+        StatusProposal prevStatus = proposal.getStatusProposal();
+        StatusProposal newStatus = dto.getStatusRekomendasi() == StatusRekomendasi.LAYAK ? StatusProposal.APPROVED : StatusProposal.REJECTED;
+        proposal.setStatusProposal(newStatus);
         proposalRepository.save(proposal);
+
+        if (newStatus != prevStatus) {
+            String statusString = newStatus == StatusProposal.APPROVED ? "disetujui" : "ditolak";
+            NotifikasiDTO notifDto = new NotifikasiDTO();
+            notifDto.setUserId(proposal.getPeneliti().getId());
+            notifDto.setJudulNotifikasi("Status Proposal Diperbarui");
+            notifDto.setPesan(String.format("Proposal Anda yang berjudul \"%s\" telah %s.", proposal.getJudulPenelitian(), statusString));
+            notifDto.setTipeNotifikasi(TipeNotifikasi.STATUS_UPDATE);
+            notifDto.setIsRead(false);
+            notifikasiService.createNotifikasi(notifDto);
+        }
 
         return toDto(savedReview);
     }

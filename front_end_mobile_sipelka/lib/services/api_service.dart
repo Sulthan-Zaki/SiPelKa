@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get/get.dart' hide Response, MultipartFile, FormData;
 import 'local_storage_service.dart';
 import '../models/storage_key.dart';
 
@@ -14,11 +15,11 @@ class ApiService {
     final fromEnv = const String.fromEnvironment('BACKEND_URL');
     if (fromEnv.isNotEmpty) return fromEnv;
     try {
-      final url_be = dotenv.env['BACKEND_URL'] ?? 'http://192.168.0.104:8080';
+      final url_be = dotenv.env['BACKEND_URL'] ?? 'http://192.168.0.102:8080';
       print('Using backend URL: $url_be');
       return url_be;
     } catch (_) {
-      return 'http://192.168.0.104:8080';
+      return 'http://192.168.0.102:8080';
     }
   }
 
@@ -53,10 +54,21 @@ class ApiService {
           print("BODY => ${response.data}");
           return handler.next(response);
         },
-        onError: (DioException e, handler) {
+        onError: (DioException e, handler) async {
           print(
             "ERROR => baseUrl: ${e.requestOptions.baseUrl} ${e.requestOptions.path}\n message: ${e.message}",
           );
+          if (e.response?.statusCode == 401 || e.response?.statusCode == 403) {
+            print("Token expired or unauthorized (401/403). Clearing session and redirecting to login.");
+            await LocalStorageService.clear();
+            _instance.clearToken();
+            Get.snackbar(
+              'Sesi Berakhir',
+              'Sesi Anda telah berakhir, silakan login kembali.',
+              snackPosition: SnackPosition.BOTTOM,
+            );
+            Get.offAllNamed('/login');
+          }
           return handler.next(e);
         },
       ),

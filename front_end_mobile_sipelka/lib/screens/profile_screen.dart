@@ -4,7 +4,6 @@ import 'package:front_end_mobile_sipelka/services/api_service.dart';
 import 'package:front_end_mobile_sipelka/services/local_storage_service.dart';
 import 'package:front_end_mobile_sipelka/controllers/profile_controller.dart';
 import 'package:front_end_mobile_sipelka/routes/app_route.dart';
-import 'login_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -32,36 +31,65 @@ class ProfileScreen extends StatelessWidget {
                 children: [
                   Stack(
                     children: [
-                      Container(
-                        width: 100,
-                        height: 100,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: theme.colorScheme.primary.withOpacity(0.1),
-                          border: Border.all(
-                            color: theme.colorScheme.primary,
-                            width: 2,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.person,
-                          size: 60,
-                          color: Color(0xFF7F080C),
-                        ),
+                      InkWell(
+                        onTap: () => controller.uploadProfilePhoto(),
+                        borderRadius: BorderRadius.circular(50),
+                        child: Obx(() {
+                          final photoUrl = controller.profilePhotoUrl.value;
+                          final hasPhoto = photoUrl.isNotEmpty;
+                          
+                          String fullUrl = photoUrl;
+                          if (hasPhoto && photoUrl.startsWith('/')) {
+                            final baseUrl = ApiService().backendUrl;
+                            final cleanBaseUrl = baseUrl.endsWith('/')
+                                ? baseUrl.substring(0, baseUrl.length - 1)
+                                : baseUrl;
+                            fullUrl = '$cleanBaseUrl$photoUrl';
+                          }
+
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.primary.withOpacity(0.1),
+                              border: Border.all(
+                                color: theme.colorScheme.primary,
+                                width: 2,
+                              ),
+                              image: hasPhoto
+                                  ? DecorationImage(
+                                      image: NetworkImage(fullUrl),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : null,
+                            ),
+                            child: hasPhoto
+                                ? null
+                                : const Icon(
+                                    Icons.person,
+                                    size: 60,
+                                    color: Color(0xFF7F080C),
+                                  ),
+                          );
+                        }),
                       ),
                       Positioned(
                         bottom: 0,
                         right: 0,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primary,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.edit,
-                            color: Colors.white,
-                            size: 16,
+                        child: GestureDetector(
+                          onTap: () => controller.uploadProfilePhoto(),
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(
+                              Icons.edit,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                           ),
                         ),
                       ),

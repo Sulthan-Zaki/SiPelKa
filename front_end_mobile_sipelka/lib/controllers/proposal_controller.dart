@@ -98,7 +98,7 @@ class ProposalController extends GetxController {
 
       Get.snackbar('Success', 'Proposal submitted successfully!');
       await loadProposals();
-      Get.offNamed(AppRoutes.proposalList);
+      Get.offNamedUntil(AppRoutes.proposalList, (route) => route.isFirst);
     } catch (e) {
       Get.snackbar('Error', 'Failed to submit proposal');
     } finally {

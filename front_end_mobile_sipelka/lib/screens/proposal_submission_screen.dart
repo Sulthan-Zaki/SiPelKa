@@ -152,7 +152,7 @@ class _ProposalSubmissionScreenState extends State<ProposalSubmissionScreen> {
                               const Text('Upload PDF (Max 10MB)',
                                   style:
                                       TextStyle(fontWeight: FontWeight.bold)),
-                              const Text('Drag & drop or tap to select',
+                              const Text('Tap to select',
                                   style: TextStyle(
                                       fontSize: 12, color: Colors.grey)),
                             ],

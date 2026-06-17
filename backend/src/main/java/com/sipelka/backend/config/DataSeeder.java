@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import org.springframework.beans.factory.annotation.Value;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +20,9 @@ import java.time.LocalDateTime;
 public class DataSeeder implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataSeeder.class);
+
+    @Value("${app.upload-dir:./uploads}")
+    private String uploadDir;
 
     private final UserRepository userRepository;
     private final ProgramHibahRepository programHibahRepository;
@@ -46,8 +50,43 @@ public class DataSeeder implements CommandLineRunner {
         this.notifikasiRepository = notifikasiRepository;
     }
 
+    private void createMockFiles() {
+        String[] relativePaths = {
+            "proposals/ml-tropis.pdf",
+            "proposals/ekonomi-perempuan.pdf",
+            "proposals/material-nano.pdf",
+            "proposals/gamifikasi-matematika.pdf",
+            "proposals/smart-farming.pdf",
+            "proposals/petani-milenial.pdf",
+            "proposals/ai-pembelajaran.pdf",
+            "proposals/irigasi-cerdas.pdf",
+            "bukti/transfer-tahap1-proposal1.pdf",
+            "bukti/transfer-tahap1-proposal6.pdf"
+        };
+
+        try {
+            java.nio.file.Path uploadPath = java.nio.file.Paths.get(uploadDir);
+            for (String relPath : relativePaths) {
+                java.nio.file.Path filePath = uploadPath.resolve(relPath);
+                java.nio.file.Path parentDir = filePath.getParent();
+                if (parentDir != null && !java.nio.file.Files.exists(parentDir)) {
+                    java.nio.file.Files.createDirectories(parentDir);
+                }
+                if (!java.nio.file.Files.exists(filePath)) {
+                    byte[] mockPdfBytes = "%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] >>\nendobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\ntrailer\n<< /Size 4 /Root 1 0 R >>\nstartxref\n190\n%%EOF".getBytes();
+                    java.nio.file.Files.write(filePath, mockPdfBytes);
+                    log.info("Created mock PDF file: {}", filePath.toAbsolutePath());
+                }
+            }
+        } catch (java.io.IOException e) {
+            log.error("Failed to create mock PDF files: {}", e.getMessage());
+        }
+    }
+
     @Override
     public void run(String... args) {
+        createMockFiles();
+
         if (userRepository.count() > 0) {
             log.info("Database already contains data. Skipping seed.");
             return;

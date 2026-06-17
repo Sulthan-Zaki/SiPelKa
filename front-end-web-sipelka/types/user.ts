@@ -5,6 +5,7 @@ export interface UserResponse {
   nip: string;
   role: "ADMIN" | "RESEARCHER" | "REVIEWER";
   isActivated: boolean;
+  profilePhotoUrl?: string;
 }
 
 export interface LoginResponse {

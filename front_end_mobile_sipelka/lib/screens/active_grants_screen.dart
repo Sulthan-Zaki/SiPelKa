@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:front_end_mobile_sipelka/controllers/proposal_controller.dart';
 import 'package:front_end_mobile_sipelka/models/proposal.dart';
+import 'package:front_end_mobile_sipelka/services/file_download_service.dart';
 
 class ActiveGrantsScreen extends StatelessWidget {
   const ActiveGrantsScreen({super.key});
@@ -177,11 +178,7 @@ class ActiveGrantsScreen extends StatelessWidget {
                         grantProposal.dokumenUrl!.split('/').last,
                         isLink: true,
                         onTap: () {
-                          Get.snackbar(
-                            'Unduh Dokumen',
-                            'Mengunduh berkas ${grantProposal.dokumenUrl!.split('/').last}...',
-                            snackPosition: SnackPosition.BOTTOM,
-                          );
+                          FileDownloadService.downloadFile(grantProposal.dokumenUrl!);
                         },
                       ),
                     ],

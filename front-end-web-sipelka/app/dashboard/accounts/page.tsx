@@ -9,6 +9,13 @@ export default function AccountsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const baseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+  const getAvatarUrl = (photoUrl?: string) => {
+    if (!photoUrl) return null;
+    if (photoUrl.startsWith("http")) return photoUrl;
+    return `${baseUrl}${photoUrl}`;
+  };
+
   // Search & Filters
   const [searchQuery, setSearchQuery] = useState("");
   const [filterRole, setFilterRole] = useState<string>("ALL");
@@ -299,8 +306,8 @@ export default function AccountsPage() {
             key={card.label}
             onClick={card.onClick}
             className={`text-left bg-surface-container-lowest p-5 rounded-xl border flex items-center justify-between transition-all hover:-translate-y-0.5 cursor-pointer select-none ${card.isActive
-                ? "border-primary shadow-sm bg-primary/5 ring-1 ring-primary/20"
-                : "border-outline-variant/15 ambient-shadow"
+              ? "border-primary shadow-sm bg-primary/5 ring-1 ring-primary/20"
+              : "border-outline-variant/15 ambient-shadow"
               }`}
           >
             <div className="space-y-1">
@@ -470,8 +477,16 @@ export default function AccountsPage() {
                       {/* Name & Email */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className={`w-10 h-10 rounded-full ${avatarBg} flex items-center justify-center text-xs font-bold font-label shrink-0`}>
-                            {initials}
+                          <div className={`w-10 h-10 rounded-full ${avatarBg} flex items-center justify-center text-xs font-bold font-label shrink-0 overflow-hidden`}>
+                            {getAvatarUrl(user.profilePhotoUrl) ? (
+                              <img
+                                src={getAvatarUrl(user.profilePhotoUrl)!}
+                                alt={user.name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              initials
+                            )}
                           </div>
                           <div>
                             <p className="font-bold text-sm text-primary font-headline">
@@ -493,10 +508,10 @@ export default function AccountsPage() {
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${user.role === "ADMIN"
-                              ? "bg-primary/10 text-primary"
-                              : user.role === "REVIEWER"
-                                ? "bg-tertiary/15 text-tertiary"
-                                : "bg-surface-container-high text-on-surface"
+                            ? "bg-primary/10 text-primary"
+                            : user.role === "REVIEWER"
+                              ? "bg-tertiary/15 text-tertiary"
+                              : "bg-surface-container-high text-on-surface"
                             }`}
                         >
                           <span className="material-symbols-outlined text-[14px]">
@@ -514,8 +529,8 @@ export default function AccountsPage() {
                       <td className="px-6 py-4">
                         <span
                           className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-2xs font-bold uppercase tracking-wider ${user.isActivated
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                              : "bg-amber-50 text-amber-700 border border-amber-200"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                            : "bg-amber-50 text-amber-700 border border-amber-200"
                             }`}
                         >
                           <span className="w-1.5 h-1.5 rounded-full bg-current"></span>

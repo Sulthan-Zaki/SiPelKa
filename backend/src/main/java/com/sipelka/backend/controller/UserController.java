@@ -61,6 +61,13 @@ public class UserController {
         return ResponseEntity.ok(userService.updateUser(id, req));
     }
 
+    @PutMapping("/{id}/profile-photo")
+    public ResponseEntity<UserDto.Response> updateProfilePhoto(
+            @PathVariable UUID id,
+            @RequestParam("profilePhotoUrl") String profilePhotoUrl) {
+        return ResponseEntity.ok(userService.updateProfilePhoto(id, profilePhotoUrl));
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
         userService.deleteUser(id);

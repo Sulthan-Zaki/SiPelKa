@@ -30,7 +30,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/users/login", "/api/users/register/admin", "/api/users/register/user").permitAll()
+                .requestMatchers("/api/users/login", "/api/users/register/admin", "/api/users/register/user", "/uploads/**").permitAll()
                 .requestMatchers("/api/notifikasi/**").hasAnyRole("ADMIN", "REVIEWER", "RESEARCHER")
                 .requestMatchers("/api/reviews/**").hasAnyRole("ADMIN", "REVIEWER")
                 .requestMatchers("/api/proposals/**", "/api/hibah/**", "/api/logbooks/**").hasAnyRole("ADMIN", "RESEARCHER")
